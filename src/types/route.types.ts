@@ -42,6 +42,18 @@ export interface StationQuestionItem {
   badgeLabel?: string;
 }
 
+export interface PuzzleItem {
+  id: number;
+  title: string;
+  subtitle?: string;
+}
+
+export interface PuzzleActivityConfig {
+  instruction: string;
+  defaultDurationSeconds: number; // 300 segundos = 5 minutos
+  puzzles: PuzzleItem[];
+}
+
 export interface StationData {
   id: string;
   index: number;
@@ -57,6 +69,7 @@ export interface StationData {
   quiz?: QuizItem;
   riddle?: RiddleItem;
   dialogQuestions?: StationQuestionItem[]; // Preguntas secuenciales interactivas
+  puzzleActivity?: PuzzleActivityConfig; // Actividad de rompecabezas con cronómetro
   badgeReward?: {
     title: string;
     description: string;

@@ -9,17 +9,25 @@
   --blh-rosa: #f6a6c9;
   --blh-rosa-dark: #d9609a;
   --blh-menta: #bfebdd;
+  --blh-menta-dark: #2ca37a;
   --blh-amarillo: #ffe69a;
   --blh-celeste: #cfe8ff;
   --blh-crema: #fff8f3;
   --blh-text: #3b2a5c;
   --blh-text-muted: #6e5c8a;
 
+  /* Tokens de Estación 3: La Gotita Valiente (Ámbar / Amarillo suave) */
+  --accent-e3: #ffc857;
+  --accent-e3-dark: #e08a00;
+  --accent-e3-soft: #fff3cc;
+  --accent-e3-border: rgba(224, 138, 0, 0.35);
+
   /* Sombras suaves multicapa */
   --blh-shadow-soft: 0 10px 30px rgba(107, 79, 168, 0.12), 0 4px 10px rgba(107, 79, 168, 0.06);
   --blh-shadow-card:
     0 16px 40px -10px rgba(107, 79, 168, 0.18), 0 6px 14px -4px rgba(107, 79, 168, 0.1);
   --blh-shadow-pill: 0 6px 20px -2px rgba(107, 79, 168, 0.25);
+  --blh-shadow-amber: 0 12px 30px -4px rgba(224, 138, 0, 0.3);
 }
 
 @layer base {
@@ -60,4 +68,36 @@
   box-shadow:
     0 14px 36px -8px rgba(107, 79, 168, 0.14),
     0 4px 12px -2px rgba(107, 79, 168, 0.06);
+}
+
+/* Scrollbar fina estilizada */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 243, 204, 0.4);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ffc857;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #e08a00;
+}
+
+/* Integración de mascota sin recuadro blanco sobre fondo crema/pastel */
+.mascot-blend {
+  mix-blend-mode: multiply;
+  filter: contrast(1.05);
+}
+
+/* Fondo degradado suave para CTA móvil sticky */
+.cta-fade-gradient {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 248, 243, 0) 0%,
+    rgba(255, 248, 243, 0.85) 25%,
+    rgba(255, 248, 243, 0.98) 100%
+  );
 }

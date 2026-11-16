@@ -8,6 +8,7 @@ import { GotitaCharacter } from './GotitaCharacter';
 import { StationHotspot } from './StationHotspot';
 import { StationModal } from './StationModal';
 import { StationOneView } from '../stations/StationOneView';
+import { StationThreePuzzleTimerView } from '../stations/StationThreePuzzleTimerView';
 import { ProgressBadge } from '../ui/ProgressBadge';
 import { ActionButton } from '../ui/ActionButton';
 
@@ -166,25 +167,25 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
         )}
 
         {/* ======================================================== */}
-        {/* BARRA SUPERIOR FLOTANTE MINIMALISTA Y TÁCTIL (min 44px)  */}
+        {/* BARRA SUPERIOR ULTRA-COMPACTA Y LIMPIA EN UNA SOLA LÍNEA */}
         {/* ======================================================== */}
-        <div className="absolute top-2 sm:top-3 left-2 sm:left-4 right-2 sm:right-4 z-40 flex items-center justify-between pointer-events-none">
-          {/* Lado izquierdo: Volver a portada */}
-          <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-1 sm:top-2 left-2 sm:left-4 right-2 sm:right-4 z-40 flex items-center justify-between pointer-events-none flex-nowrap whitespace-nowrap">
+          {/* Lado izquierdo: Volver a portada compacto */}
+          <div className="flex items-center pointer-events-auto">
             <ActionButton
               size="sm"
               variant="secondary"
               onClick={onBackToCover}
-              icon={<Home size={16} />}
+              icon={<Home size={14} />}
               aria-label="Volver al inicio"
-              className="min-h-[44px] min-w-[44px] px-3 py-2 bg-white/95 backdrop-blur-md shadow-sm border border-white"
+              className="min-h-[34px] sm:min-h-[38px] px-2.5 py-1 text-xs font-bold bg-white/95 backdrop-blur-md shadow-sm border border-white rounded-full"
             >
-              <span className="hidden sm:inline text-xs font-bold">Inicio</span>
+              <span>Inicio</span>
             </ActionButton>
           </div>
 
-          {/* Centro: Indicador de Progreso Dinámico */}
-          <div className="pointer-events-auto">
+          {/* Centro: Indicador de Progreso Dinámico y Delgado */}
+          <div className="pointer-events-auto flex items-center">
             <ProgressBadge
               current={currentStationIndex}
               total={totalStations}
@@ -192,57 +193,40 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
             />
           </div>
 
-          {/* Lado derecho: Acciones de avance y calibración */}
+          {/* Lado derecho: Solo botón Avanzar integrado y reinicio pequeño */}
           <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-            {/* Botón Avanzar a la siguiente estación */}
-            {currentStationIndex < totalStations - 1 && (
+            {currentStationIndex < totalStations - 1 ? (
               <ActionButton
                 size="sm"
                 variant="primary"
                 onClick={advanceToNextStation}
-                iconRight={<ArrowRight size={16} />}
-                className="min-h-[44px] px-3.5 py-2 shadow-sm"
+                iconRight={<ArrowRight size={14} />}
+                className="min-h-[34px] sm:min-h-[38px] px-3 sm:px-4 py-1 text-xs sm:text-sm font-black shadow-sm rounded-full"
               >
-                <span className="hidden sm:inline text-xs">Avanzar</span>
+                <span>Avanzar</span>
               </ActionButton>
-            )}
-
-            {/* Celebración de Meta alcanzada */}
-            {isCompleted && (
+            ) : (
               <ActionButton
                 size="sm"
                 variant="mint"
                 onClick={() => openStationModal(currentStation)}
-                icon={<Award size={16} />}
-                className="min-h-[44px] px-3 py-2"
+                icon={<Award size={14} />}
+                className="min-h-[34px] sm:min-h-[38px] px-3 py-1 text-xs font-black shadow-sm rounded-full"
               >
-                <span className="hidden sm:inline text-xs">¡Completado!</span>
+                <span>¡Meta!</span>
               </ActionButton>
             )}
 
-            {/* Reiniciar Ruta */}
+            {/* Reiniciar Ruta pequeño */}
             <ActionButton
               size="sm"
               variant="ghost"
               onClick={resetRoute}
               title="Reiniciar ruta"
               aria-label="Reiniciar ruta"
-              className="min-h-[44px] min-w-[44px] p-2 rounded-xl bg-white/80 hover:bg-white shadow-sm"
+              className="min-h-[34px] min-w-[34px] w-8 h-8 sm:w-9 sm:h-9 p-1 rounded-full bg-white/85 hover:bg-white shadow-sm text-slate-600 flex items-center justify-center"
             >
-              <RotateCcw size={15} />
-            </ActionButton>
-
-            {/* Toggle Modo Debug */}
-            <ActionButton
-              size="sm"
-              variant={debugMode ? 'mint' : 'ghost'}
-              onClick={toggleDebugMode}
-              title="Modo Calibración de Coordenadas (Tecla D)"
-              aria-label="Modo Debug"
-              className="min-h-[44px] min-w-[44px] p-2 rounded-xl text-xs bg-white/80 hover:bg-white shadow-sm"
-            >
-              <Compass size={15} />
-              <span className="hidden md:inline font-bold">{debugMode ? 'Debug ON' : 'Debug'}</span>
+              <RotateCcw size={14} />
             </ActionButton>
           </div>
         </div>
@@ -295,8 +279,31 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
           )}
         </AnimatePresence>
 
+        {/* Vista interactiva específica para Estación 3: La Gotita Valiente (Rompecabezas + Timer 5 min) */}
+        <AnimatePresence>
+          {isModalOpen && selectedStation?.id === 'estacion-3' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-[#F0FDF7]"
+            >
+              <StationThreePuzzleTimerView
+                onBackToMap={closeModal}
+                onCompleteAndAdvance={() => {
+                  markStationCompleted('estacion-3');
+                  closeModal();
+                  // Avanza automáticamente hacia la Estación 4 (Adivinanzas)
+                  advanceToNextStation();
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Modal Educativo para otras estaciones */}
-        {selectedStation?.id !== 'estacion-1' && (
+        {selectedStation?.id !== 'estacion-1' && selectedStation?.id !== 'estacion-3' && (
           <StationModal
             key={selectedStation?.id || 'none'}
             isOpen={isModalOpen}

@@ -196,7 +196,17 @@ export const ROUTE_STATIONS: StationData[] = [
     type: 'station',
     coordinates: { x: 72.5, y: 59.0 },
     themeColor: 'lavender',
-    iconName: 'Microscope',
+    iconName: 'Puzzle',
+    puzzleActivity: {
+      instruction:
+        'En esta estación, los participantes deberán organizarse en grupos y armar uno de los tres rompecabezas disponibles en un tiempo de 5 minutos. Cada uno contiene información importante sobre el Banco de Leche Humana.',
+      defaultDurationSeconds: 300,
+      puzzles: [
+        { id: 1, title: 'Rompecabezas 1', subtitle: 'Equipo 1' },
+        { id: 2, title: 'Rompecabezas 2', subtitle: 'Equipo 2' },
+        { id: 3, title: 'Rompecabezas 3', subtitle: 'Equipo 3' },
+      ],
+    },
     quiz: {
       id: 'quiz-estacion-3',
       question: '¿Para qué sirve el proceso de pasteurización en el Banco de Leche?',
