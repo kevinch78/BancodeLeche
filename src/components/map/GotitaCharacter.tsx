@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { WaypointCoordinates } from '../../types/route.types';
 import { gotitaImg } from '../../assets/images';
 
@@ -8,6 +8,7 @@ interface GotitaCharacterProps {
   isTraveling: boolean;
   onArrive?: () => void;
   stationName?: string;
+  stationIndex?: number;
 }
 
 export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
@@ -15,13 +16,29 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
   isTraveling,
   onArrive,
   stationName,
+  stationIndex = 0,
 }) => {
   const [imageError, setImageError] = useState(false);
   const gotitaImageUrl = gotitaImg;
 
+  // Frases emotivas según la estación o si está viajando
+  const speechText = isTraveling
+    ? '¡Allá vamos! 🏃‍♀️💨'
+    : stationIndex === 0
+      ? '¡Lista para explorar! 💧'
+      : stationIndex === 1
+        ? '¡Descubrí el calostro! ✨'
+        : stationIndex === 2
+          ? '¡Cadena de frío lista! ❄️'
+          : stationIndex === 3
+            ? '¡Valiente y pasteurizada! 🧩'
+            : stationIndex === 4
+              ? '¡Donar es amor puro! 💖'
+              : '¡Llegamos al hospital! 🏁🏥';
+
   return (
     <motion.div
-      className="absolute z-30 pointer-events-none -translate-x-1/2 -translate-y-[85%] flex flex-col items-center"
+      className="absolute z-30 pointer-events-none -translate-x-1/2 -translate-y-[85%] flex flex-col items-center select-none"
       initial={false}
       animate={{
         left: `${coordinates.x}%`,
@@ -39,26 +56,68 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
         }
       }}
     >
-      {/* Etiqueta flotante sutil con el nombre del personaje */}
-      <motion.div
-        animate={{ y: [0, -3, 0] }}
-        transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-        className="mb-0.5 px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-sm border border-blh-sky-300 shadow-sm flex items-center gap-1"
-      >
-        <span className="w-1.5 h-1.5 rounded-full bg-blh-sky-500 animate-ping" />
-        <span className="text-[9px] sm:text-[10px] font-black text-blh-hudn-blue tracking-tight whitespace-nowrap">
-          {stationName || 'La Gotita'}
-        </span>
-      </motion.div>
+      {/* ======================================================== */}
+      {/* GLOBO DE DIÁLOGO TIERNO (Speech Bubble animado)          */}
+      {/* ======================================================== */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={speechText}
+          initial={{ opacity: 0, y: 4, scale: 0.85 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.85 }}
+          transition={{ duration: 0.25 }}
+          className="relative mb-1 flex flex-col items-center"
+        >
+          <div className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-2xl bg-white/95 backdrop-blur-md border border-[#F6A6C9] shadow-sm flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E08A00] animate-ping shrink-0" />
+            <span className="text-[9px] sm:text-[11px] font-fredoka font-bold text-[#3B2A5C] whitespace-nowrap tracking-tight">
+              {speechText}
+            </span>
+          </div>
+          {/* Cola de la nube de diálogo */}
+          <div className="w-2 h-1.5 bg-white border-r border-b border-[#F6A6C9] rotate-45 -mt-1 shadow-2xs" />
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Contenedor del personaje con animación continua de flotación/brinco */}
+      {/* ======================================================== */}
+      {/* RASTRO DE CHISPAS Y GOTITAS DORADAS DURANTE EL VIAJE     */}
+      {/* ======================================================== */}
+      {isTraveling && (
+        <div className="absolute top-[60%] left-1/2 -translate-x-1/2 pointer-events-none z-10">
+          {[0, 1, 2, 3].map((i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 1, scale: 0.4, x: 0, y: 0 }}
+              animate={{
+                opacity: [1, 0.8, 0],
+                scale: [0.4, 1.1, 0.6],
+                x: (i % 2 === 0 ? -1 : 1) * (14 + i * 9),
+                y: 10 + i * 8,
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 0.6,
+                delay: i * 0.14,
+                ease: 'easeOut',
+              }}
+              className="absolute text-[11px] sm:text-xs select-none"
+            >
+              {i % 2 === 0 ? '✨' : '💧'}
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* CONTENEDOR DEL PERSONAJE CON BRINCO Y FLOTACIÓN          */}
+      {/* ======================================================== */}
       <motion.div
         animate={
           isTraveling
             ? {
-                y: [0, -14, 0],
-                rotate: [0, -5, 5, 0],
-                scale: [1, 1.06, 0.96, 1],
+                y: [0, -16, 0],
+                rotate: [0, -6, 6, 0],
+                scale: [1, 1.08, 0.95, 1],
               }
             : {
                 y: [0, -6, 0],
@@ -67,7 +126,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
         }
         transition={{
           repeat: Infinity,
-          duration: isTraveling ? 0.45 : 2.5,
+          duration: isTraveling ? 0.42 : 2.4,
           ease: 'easeInOut',
         }}
         className="relative w-11 h-13 sm:w-13 sm:h-16 md:w-15 md:h-18 filter drop-shadow-md flex items-center justify-center"
@@ -75,7 +134,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
         {!imageError ? (
           <img
             src={gotitaImageUrl}
-            alt="Mascota Gotita"
+            alt={stationName || 'La Gotita'}
             className="w-full h-full object-contain mascot-blend"
             onError={() => setImageError(true)}
           />
@@ -87,12 +146,12 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
       {/* Sombra proyectada en el piso */}
       <motion.div
         animate={{
-          scale: isTraveling ? [1, 0.6, 1] : [1, 0.85, 1],
-          opacity: isTraveling ? [0.4, 0.2, 0.4] : [0.35, 0.2, 0.35],
+          scale: isTraveling ? [1, 0.5, 1] : [1, 0.85, 1],
+          opacity: isTraveling ? [0.4, 0.15, 0.4] : [0.35, 0.2, 0.35],
         }}
         transition={{
           repeat: Infinity,
-          duration: isTraveling ? 0.45 : 2.5,
+          duration: isTraveling ? 0.42 : 2.4,
           ease: 'easeInOut',
         }}
         className="w-10 sm:w-14 h-3 bg-slate-900/30 rounded-full blur-[2px] -mt-1"
@@ -102,7 +161,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
 };
 
 /**
- * Renderizado vectorial de respaldo para la Gotita (Ultra tierno y nítido)
+ * Renderizado vectorial de respaldo para la Gotita
  */
 const GotitaVectorGraphic: React.FC<{ isTraveling: boolean }> = ({ isTraveling }) => {
   return (

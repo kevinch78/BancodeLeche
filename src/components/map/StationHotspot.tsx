@@ -31,7 +31,25 @@ export const StationHotspot: React.FC<StationHotspotProps> = ({
         top: `${station.coordinates.y}%`,
       }}
     >
-      {/* Botón interactivo táctil amplio pero visualmente sutil y transparente */}
+      {/* ======================================================== */}
+      {/* MAGIA SENDERO VIVO: FLORECITA FLORECIENDO AL COMPLETAR   */}
+      {/* ======================================================== */}
+      {isCompleted && (
+        <motion.div
+          initial={{ scale: 0, rotate: -45, y: 5 }}
+          animate={{ scale: 1, rotate: [0, 10, -5, 0], y: 0 }}
+          transition={{
+            scale: { type: 'spring', stiffness: 300, damping: 18 },
+            rotate: { repeat: Infinity, duration: 4, ease: 'easeInOut' },
+          }}
+          className="absolute -top-4 -right-2.5 z-30 text-xs sm:text-sm select-none pointer-events-none drop-shadow"
+          title="¡Estación florecida con amor!"
+        >
+          {station.index % 2 === 0 ? '🌸' : '🌼'}
+        </motion.div>
+      )}
+
+      {/* Botón interactivo táctil amplio */}
       <motion.button
         type="button"
         disabled={!isClickable}
@@ -43,25 +61,30 @@ export const StationHotspot: React.FC<StationHotspotProps> = ({
         }`}
         aria-label={`${station.name} (${station.numberLabel || 'Parada'})`}
       >
-        {/* Aro indicador pulsante sutil sobre el camino morado */}
+        {/* Aro indicador pulsante sobre la parada actual */}
         {isCurrent && (
           <>
-            <span className="absolute inset-0 rounded-full bg-blh-sky-400/30 animate-ping pointer-events-none" />
+            <span className="absolute inset-0 rounded-full bg-blh-sky-400/35 animate-ping pointer-events-none" />
             <span className="absolute -inset-1 rounded-full border-2 border-blh-sky-400 animate-pulse pointer-events-none" />
           </>
         )}
 
-        {/* Punto central discreto con brillo */}
+        {/* Resplandor suave del Sendero Vivo para estaciones completadas */}
+        {isCompleted && (
+          <span className="absolute -inset-1 rounded-full bg-emerald-400/25 blur-[3px] pointer-events-none" />
+        )}
+
+        {/* Punto central con icono o check */}
         <div
           className={`flex items-center justify-center rounded-full shadow-md backdrop-blur-sm transition-all ${
             isGoal
-              ? 'w-8 h-8 sm:w-10 sm:h-10 bg-amber-400/80 text-amber-950 border-2 border-white'
+              ? 'w-8 h-8 sm:w-10 sm:h-10 bg-amber-400/90 text-amber-950 border-2 border-white'
               : isCompleted
-                ? 'w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500/85 text-white border-2 border-white'
+                ? 'w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500/90 text-white border-2 border-white'
                 : isCurrent
-                  ? 'w-7 h-7 sm:w-8 sm:h-8 bg-blh-sky-500/90 text-white border-2 border-white'
+                  ? 'w-7 h-7 sm:w-8 sm:h-8 bg-blh-sky-500/95 text-white border-2 border-white'
                   : isUnlocked
-                    ? 'w-6 h-6 sm:w-7 sm:h-7 bg-white/70 text-blh-pink-500 border border-blh-pink-300 hover:bg-white'
+                    ? 'w-6 h-6 sm:w-7 sm:h-7 bg-white/80 text-blh-pink-500 border border-blh-pink-300 hover:bg-white'
                     : 'w-5 h-5 sm:w-6 sm:h-6 bg-slate-300/40 border border-slate-300/60 opacity-60'
           }`}
         >

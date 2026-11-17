@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { Play, Maximize2, Minimize2 } from 'lucide-react';
 import { ActionButton } from '../ui/ActionButton';
+import { useFullscreen } from '../../hooks/useFullscreen';
 import { coverBg } from '../../assets/images';
 
 interface CoverScreenProps {
@@ -10,22 +11,48 @@ interface CoverScreenProps {
 
 export const CoverScreen: React.FC<CoverScreenProps> = ({ onStart }) => {
   const [imageError, setImageError] = useState(false);
+  const { isFullscreen, toggleFullscreen, enterFullscreen } = useFullscreen();
   const coverBgUrl = coverBg;
 
-  // Intenta activar pantalla completa de forma segura para ocultar barras de navegación en móviles
-  const handleStart = () => {
-    try {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    } catch {
-      // Ignorar excepciones si el navegador restringe la acción
-    }
+  // Intenta activar pantalla completa de forma inmediata con el primer gesto del usuario
+  const handleStart = async () => {
+    await enterFullscreen();
     onStart();
   };
 
+  // Tecla 'F' para pantalla completa desde la portada
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+      if (e.key === ' ' || e.key === 'Enter') {
+        handleStart();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [toggleFullscreen]);
+
   return (
-    <div className="relative w-screen h-dvh overflow-hidden select-none flex items-center justify-center bg-gradient-to-b from-[#fce4ec] via-[#e1f5fe] to-[#e8f5e9]">
+    <div
+      onClick={enterFullscreen}
+      className="relative w-screen h-dvh overflow-hidden select-none flex items-center justify-center bg-gradient-to-b from-[#fce4ec] via-[#e1f5fe] to-[#e8f5e9]"
+    >
+      {/* Botón flotante sutil de Pantalla Completa / Modo Proyector */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleFullscreen();
+        }}
+        title={isFullscreen ? 'Salir de pantalla completa (F)' : 'Pantalla completa / Modo proyector (F)'}
+        aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa / Modo proyector'}
+        className="absolute top-2 right-2 sm:top-3 sm:right-3 z-30 min-h-[36px] min-w-[36px] w-9 h-9 rounded-full bg-white/80 hover:bg-white backdrop-blur-md shadow-sm border border-white/60 text-slate-700 flex items-center justify-center transition-all duration-200 active:scale-95"
+      >
+        {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+      </button>
+
       {/* Contenedor dinámico 16:9 ajustado al 100% del viewport sin cortes */}
       <div
         className="relative flex items-center justify-center overflow-hidden"
@@ -58,7 +85,10 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({ onStart }) => {
               size="lg"
               variant="pink"
               pulse
-              onClick={handleStart}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStart();
+              }}
               icon={
                 <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white text-blh-pink-500 flex items-center justify-center shadow-inner">
                   <Play size={16} className="fill-blh-pink-500 translate-x-0.5 sm:size-18" />
@@ -75,23 +105,10 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({ onStart }) => {
   );
 };
 
-/**
- * Gráfico Vectorial de Respaldo si no estuviera la imagen
- */
 const PlaceholderCoverGraphic: React.FC = () => {
   return (
-    <div className="w-full h-full bg-gradient-to-b from-sky-200 via-blh-sky-100 to-emerald-100 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-      <div className="relative z-10 max-w-2xl px-4 mb-2">
-        <span className="inline-block px-4 py-1 rounded-full bg-white/80 backdrop-blur-sm text-blh-hudn-blue font-black text-xs md:text-sm tracking-wider uppercase mb-2 shadow-sm">
-          Aventura Educativa Interactiva
-        </span>
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-800 tracking-tight font-display drop-shadow-sm">
-          La Ruta de la <span className="text-blh-sky-500">Gotita</span>
-        </h1>
-        <p className="text-xs sm:text-base font-bold text-slate-600 mt-2">
-          Banco de Leche Humana • Hospital Universitario Departamental de Nariño
-        </p>
-      </div>
+    <div className="w-full h-full bg-gradient-to-tr from-blh-sky-200 via-blh-pink-100 to-blh-mint-100 flex items-center justify-center">
+      <span className="text-slate-600 font-bold text-sm">Cargando portada...</span>
     </div>
   );
 };

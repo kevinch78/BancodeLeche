@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, RotateCcw, Compass, ArrowRight, Copy, Check, Award } from 'lucide-react';
+import { Home, RotateCcw, Compass, ArrowRight, Copy, Check, Award, Maximize2, Minimize2 } from 'lucide-react';
 import { ROUTE_STATIONS } from '../../config/routeData';
 import { useRouteProgress } from '../../hooks/useRouteProgress';
+import { useFullscreen } from '../../hooks/useFullscreen';
 import { mapBg } from '../../assets/images';
 import { GotitaCharacter } from './GotitaCharacter';
 import { StationHotspot } from './StationHotspot';
@@ -15,6 +16,7 @@ import { ActionButton } from '../ui/ActionButton';
 
 interface InteractiveMapProps {
   onBackToCover: () => void;
+  onGoToMeta?: () => void;
 }
 
 interface DebugPin {
@@ -23,7 +25,7 @@ interface DebugPin {
   timestamp: number;
 }
 
-export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover }) => {
+export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover, onGoToMeta }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapImageError, setMapImageError] = useState(false);
   const [debugPin, setDebugPin] = useState<DebugPin | null>(null);
@@ -51,6 +53,68 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
   } = useRouteProgress();
 
   const mapBgUrl = mapBg;
+  const { isFullscreen, toggleFullscreen, enterFullscreen } = useFullscreen();
+
+  // Entrar automáticamente en pantalla completa al montar en el mapa
+  useEffect(() => {
+    enterFullscreen();
+  }, [enterFullscreen]);
+
+  // Atajos de teclado para Charlas / Modo Presentador
+  useEffect(() => {
+    const handlePresenterKey = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      // Pantalla completa con 'F'
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+
+      // Avanzar estación con Flecha Derecha o Barra Espaciadora
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        if (isModalOpen) {
+          closeModal();
+          advanceToNextStation();
+        } else if (currentStationIndex < totalStations - 1) {
+          advanceToNextStation();
+        } else if (onGoToMeta) {
+          onGoToMeta();
+        }
+      }
+
+      // Retroceder estación con Flecha Izquierda
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentStationIndex > 0) {
+          if (isModalOpen) closeModal();
+          moveToStation(currentStationIndex - 1);
+        }
+      }
+
+      // Abrir modal con Enter
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!isModalOpen) {
+          openStationModal(currentStation);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handlePresenterKey);
+    return () => window.removeEventListener('keydown', handlePresenterKey);
+  }, [
+    isModalOpen,
+    currentStationIndex,
+    totalStations,
+    currentStation,
+    advanceToNextStation,
+    moveToStation,
+    openStationModal,
+    closeModal,
+    onGoToMeta,
+    toggleFullscreen,
+  ]);
 
   // Toggle de Debug Mode con tecla 'D'
   useEffect(() => {
@@ -89,6 +153,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
     },
     [debugMode]
   );
+
+  // Si se abre la estación Meta y existe onGoToMeta, transicionar directamente a la pantalla Meta
+  useEffect(() => {
+    if (isModalOpen && selectedStation?.id === 'meta-hudn' && onGoToMeta) {
+      closeModal();
+      onGoToMeta();
+    }
+  }, [isModalOpen, selectedStation, onGoToMeta, closeModal]);
 
   return (
     <div className="relative w-screen h-dvh flex items-center justify-center bg-[#cbe8f5] overflow-hidden select-none">
@@ -132,6 +204,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
               isCompleted={isDone}
               debugMode={debugMode}
               onClick={() => {
+                if (station.id === 'meta-hudn' && (isDone || isUnlocked || debugMode)) {
+                  if (onGoToMeta) {
+                    onGoToMeta();
+                    return;
+                  }
+                }
                 if (station.index === currentStationIndex) {
                   openStationModal(station);
                 } else if (isUnlocked || debugMode) {
@@ -148,6 +226,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
           isTraveling={isTraveling}
           onArrive={finishTraveling}
           stationName={currentStation.numberLabel || currentStation.name}
+          stationIndex={currentStationIndex}
         />
 
         {/* Pin de Calibración temporal al hacer clic en Modo Debug */}
@@ -210,13 +289,31 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
               <ActionButton
                 size="sm"
                 variant="mint"
-                onClick={() => openStationModal(currentStation)}
+                onClick={() => {
+                  if (onGoToMeta) {
+                    onGoToMeta();
+                  } else {
+                    openStationModal(currentStation);
+                  }
+                }}
                 icon={<Award size={14} />}
                 className="min-h-[34px] sm:min-h-[38px] px-3 py-1 text-xs font-black shadow-sm rounded-full"
               >
                 <span>¡Meta!</span>
               </ActionButton>
             )}
+
+            {/* Botón de Pantalla Completa / Modo Proyector */}
+            <ActionButton
+              size="sm"
+              variant="ghost"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Salir de pantalla completa (F)' : 'Pantalla completa / Modo proyector (F)'}
+              aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa / Modo proyector'}
+              className="min-h-[34px] min-w-[34px] w-8 h-8 sm:w-9 sm:h-9 p-1 rounded-full bg-white/85 hover:bg-white shadow-sm text-slate-700 flex items-center justify-center"
+            >
+              {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            </ActionButton>
 
             {/* Reiniciar Ruta pequeño */}
             <ActionButton
@@ -318,8 +415,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
                 onCompleteAndAdvance={() => {
                   markStationCompleted('estacion-4');
                   closeModal();
-                  // Avanza automáticamente hacia la Meta final (Banco de Leche Humana)
-                  advanceToNextStation();
+                  if (onGoToMeta) {
+                    onGoToMeta();
+                  } else {
+                    // Avanza automáticamente hacia la Meta final (Banco de Leche Humana)
+                    advanceToNextStation();
+                  }
                 }}
               />
             </motion.div>
@@ -329,7 +430,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
         {/* Modal Educativo para otras estaciones */}
         {selectedStation?.id !== 'estacion-1' &&
           selectedStation?.id !== 'estacion-3' &&
-          selectedStation?.id !== 'estacion-4' && (
+          selectedStation?.id !== 'estacion-4' &&
+          selectedStation?.id !== 'meta-hudn' && (
           <StationModal
             key={selectedStation?.id || 'none'}
             isOpen={isModalOpen}

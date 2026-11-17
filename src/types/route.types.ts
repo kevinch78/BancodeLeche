@@ -3,7 +3,7 @@
  * Banco de Leche Humana - Hospital Universitario Departamental de Nariño (HUDN)
  */
 
-export type ScreenView = 'cover' | 'map';
+export type ScreenView = 'cover' | 'map' | 'meta';
 
 export type StationType = 'start' | 'station' | 'goal';
 

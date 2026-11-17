@@ -4,9 +4,10 @@ import { RotateCw, Smartphone, Sparkles } from 'lucide-react';
 
 interface OrientationGuardProps {
   children: React.ReactNode;
+  enabled?: boolean;
 }
 
-export const OrientationGuard: React.FC<OrientationGuardProps> = ({ children }) => {
+export const OrientationGuard: React.FC<OrientationGuardProps> = ({ children, enabled = true }) => {
   const [isPortrait, setIsPortrait] = useState<boolean>(false);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export const OrientationGuard: React.FC<OrientationGuardProps> = ({ children }) 
 
       {/* Pantalla bloqueadora amable cuando el dispositivo está en orientación vertical */}
       <AnimatePresence>
-        {isPortrait && (
+        {enabled && isPortrait && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
