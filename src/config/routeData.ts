@@ -10,7 +10,7 @@ export const ROUTE_STATIONS: StationData[] = [
     id: 'start-point',
     index: 0,
     numberLabel: 'Inicio',
-    name: 'El Jardín del Origen',
+    name: 'La Ruta de la Gotita',
     subtitle: 'Bajo la sombra del gran árbol protector',
     shortDescription:
       'Aquí despierta nuestra pequeña gotita de leche materna, lista para una misión de vida y amor.',
@@ -299,7 +299,7 @@ export const ROUTE_STATIONS: StationData[] = [
     educationalContent:
       '¡FELICITACIONES, CAMPEÓN(A)! Has completado "La Ruta de la Gotita". Gracias a tu compromiso y curiosidad, nuestra Gotita llegó feliz y victoriosa al Banco de Leche Humana del Hospital Universitario Departamental de Nariño. Aquí, médicos, enfermeras y nutricionistas entregan este tesoro a los bebés de la Unidad Neonatal. ¡Tú también eres parte de esta hermosa red de vida!',
     type: 'goal',
-    coordinates: { x: 31.5, y: 84.5 },
+    coordinates: { x: 16.5, y: 76.5 },
     themeColor: 'hudn',
     iconName: 'Award',
     badgeReward: {

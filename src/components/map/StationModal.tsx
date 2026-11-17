@@ -13,6 +13,7 @@ import {
 import type { StationData } from '../../types/route.types';
 import { ModalContainer } from '../ui/ModalContainer';
 import { ActionButton } from '../ui/ActionButton';
+import { rutafinalHospitalImg } from '../../assets/images';
 
 interface StationModalProps {
   isOpen: boolean;
@@ -71,14 +72,35 @@ export const StationModal: React.FC<StationModalProps> = ({
       subtitle={station.subtitle}
     >
       <div className="space-y-5 text-slate-700">
+        {/* Imagen Ilustrada de Misión Cumplida en el Hospital HUDN */}
+        {isGoal && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-md border-2 border-[#BFEBDD] bg-white flex items-center justify-center p-2"
+          >
+            <img
+              src={rutafinalHospitalImg}
+              alt="Llegada al Banco de Leche Humana Hospital Universitario Departamental de Nariño"
+              className="w-full h-auto max-h-[300px] sm:max-h-[360px] object-contain rounded-xl select-none"
+            />
+            {/* Insignia flotante de Victoria */}
+            <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3.5 py-1 rounded-full border border-emerald-300 shadow-sm flex items-center gap-1.5 text-xs font-fredoka font-bold text-emerald-700">
+              <Sparkles size={14} className="text-amber-500 fill-amber-400" />
+              <span>¡Misión Cumplida!</span>
+            </div>
+          </motion.div>
+        )}
+
         {/* Contenido Educativo Principal */}
         <div className="bg-blh-sky-50/70 border border-blh-sky-100 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
           <div className="p-2.5 rounded-xl bg-white shadow-sm text-blh-sky-500 flex-shrink-0">
-            <BookOpen size={22} />
+            {isGoal ? <Award size={22} className="text-amber-500" /> : <BookOpen size={22} />}
           </div>
           <div className="space-y-1.5">
             <h4 className="text-sm font-extrabold text-blh-hudn-blue uppercase tracking-wide">
-              ¿Sabías que...?
+              {isGoal ? '¡Mensaje Especial del Banco de Leche!' : '¿Sabías que...?'}
             </h4>
             <p className="text-xs sm:text-sm leading-relaxed text-slate-600 font-medium">
               {station.educationalContent}

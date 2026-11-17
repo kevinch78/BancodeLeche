@@ -9,6 +9,7 @@ import { StationHotspot } from './StationHotspot';
 import { StationModal } from './StationModal';
 import { StationOneView } from '../stations/StationOneView';
 import { StationThreePuzzleTimerView } from '../stations/StationThreePuzzleTimerView';
+import { StationFourRiddleView } from '../stations/StationFourRiddleView';
 import { ProgressBadge } from '../ui/ProgressBadge';
 import { ActionButton } from '../ui/ActionButton';
 
@@ -302,8 +303,33 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover })
           )}
         </AnimatePresence>
 
+        {/* Vista interactiva específica para Estación 4: La Gotita Generosa (Adivinanzas) */}
+        <AnimatePresence>
+          {isModalOpen && selectedStation?.id === 'estacion-4' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFF5F8]"
+            >
+              <StationFourRiddleView
+                onBackToMap={closeModal}
+                onCompleteAndAdvance={() => {
+                  markStationCompleted('estacion-4');
+                  closeModal();
+                  // Avanza automáticamente hacia la Meta final (Banco de Leche Humana)
+                  advanceToNextStation();
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Modal Educativo para otras estaciones */}
-        {selectedStation?.id !== 'estacion-1' && selectedStation?.id !== 'estacion-3' && (
+        {selectedStation?.id !== 'estacion-1' &&
+          selectedStation?.id !== 'estacion-3' &&
+          selectedStation?.id !== 'estacion-4' && (
           <StationModal
             key={selectedStation?.id || 'none'}
             isOpen={isModalOpen}

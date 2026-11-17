@@ -22,6 +22,12 @@
   --accent-e3-soft: #fff3cc;
   --accent-e3-border: rgba(224, 138, 0, 0.35);
 
+  /* Tokens de Estación 4: La Gotita Generosa (Rosa / Fucsia suave) */
+  --accent-e4: #f6a6c9;
+  --accent-e4-dark: #d9609a;
+  --accent-e4-soft: #ffe3f0;
+  --accent-e4-border: rgba(217, 96, 154, 0.35);
+
   /* Sombras suaves multicapa */
   --blh-shadow-soft: 0 10px 30px rgba(107, 79, 168, 0.12), 0 4px 10px rgba(107, 79, 168, 0.06);
   --blh-shadow-card:

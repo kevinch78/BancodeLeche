@@ -76,7 +76,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
           <img
             src={gotitaImageUrl}
             alt="Mascota Gotita"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain mascot-blend"
             onError={() => setImageError(true)}
           />
         ) : (
