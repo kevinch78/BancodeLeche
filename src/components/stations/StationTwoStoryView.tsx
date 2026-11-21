@@ -2,10 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
-  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   RotateCcw,
-  Volume2,
-  VolumeX,
   Play,
   Pause,
   Maximize2,
@@ -27,10 +26,8 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
   onCompleteAndAdvance,
 }) => {
   const [currentSceneIndex, setCurrentSceneIndex] = useState<number>(0);
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isSceneAudioFinished, setIsSceneAudioFinished] = useState<boolean>(false);
-  const [audioCurrentTime, setAudioCurrentTime] = useState<number>(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { isFullscreen, toggleFullscreen } = useFullscreen();
@@ -39,27 +36,11 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
   const isFirstScene = currentSceneIndex === 0;
   const isLastScene = currentSceneIndex === CUENTO_SCENES.length - 1;
 
-  // Duración del fragmento de la escena actual
-  const sceneDuration = currentScene.isCover
-    ? 0
-    : Math.max(1, currentScene.endTime - currentScene.startTime);
-
-  // Progreso relativo dentro del fragmento de la escena actual (0 a 1)
-  const sceneProgress = currentScene.isCover
-    ? 0
-    : Math.min(
-        1,
-        Math.max(
-          0,
-          (audioCurrentTime - currentScene.startTime) / sceneDuration
-        )
-      );
-
   // Reproducir el fragmento de la escena
   const playSceneAudio = useCallback(
     (fromStart = false) => {
       const audio = audioRef.current;
-      if (!audio || !soundEnabled || currentScene.isCover) return;
+      if (!audio || currentScene.isCover) return;
 
       if (fromStart || audio.currentTime < currentScene.startTime || audio.currentTime >= currentScene.endTime) {
         audio.currentTime = currentScene.startTime;
@@ -75,7 +56,7 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
           setIsPlaying(false);
         });
     },
-    [currentScene, soundEnabled]
+    [currentScene]
   );
 
   // Pausar audio
@@ -97,7 +78,7 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
       const audio = audioRef.current;
       if (audio) {
         audio.currentTime = targetScene.startTime;
-        if (!targetScene.isCover && soundEnabled) {
+        if (!targetScene.isCover) {
           audio
             .play()
             .then(() => setIsPlaying(true))
@@ -108,7 +89,7 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
         }
       }
     },
-    [soundEnabled]
+    []
   );
 
   const handleNext = useCallback(() => {
@@ -144,9 +125,8 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
     if (!audio || currentScene.isCover) return;
 
     const time = audio.currentTime;
-    setAudioCurrentTime(time);
 
-    // Si alcanza el final de la escena actual -> PAUSAR AUTOMÁTICAMENTE
+    // Si alcanza el final de la escena actual -> pausar
     if (time >= currentScene.endTime) {
       audio.pause();
       audio.currentTime = currentScene.endTime;
@@ -154,17 +134,6 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
       setIsSceneAudioFinished(true);
     }
   };
-
-  // Sincronizar estado de mute / volumen
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = !soundEnabled;
-    if (!soundEnabled && isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    }
-  }, [soundEnabled, isPlaying]);
 
   // Atajos de teclado para facilitar charlas presenciales / facilitadora
   useEffect(() => {
@@ -214,15 +183,25 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
         <img
           src={mapBg}
           alt=""
-          className="w-full h-full object-cover filter blur-[12px] scale-105"
+          className="w-full h-full object-cover filter blur-[14px] scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#E0F2FE]/80 via-[#FFF8F3]/70 to-[#E0F2FE]/80" />
       </div>
 
+      {/* Barra de progreso súper fina en la parte superior (0px espacio ocupado) */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-sky-100/70 z-40">
+        <motion.div
+          className="h-full bg-gradient-to-r from-[#38BDF8] to-[#0284C7]"
+          initial={false}
+          animate={{ width: `${((currentSceneIndex + 1) / CUENTO_SCENES.length) * 100}%` }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
+
       {/* ======================================================== */}
-      {/* 2. HEADER SUPERIOR COMPACTO (48px - 52px)                */}
+      {/* 2. HEADER SUPERIOR ULTRA COMPACTO (h-9 a h-11)           */}
       {/* ======================================================== */}
-      <header className="relative z-30 w-full h-11 sm:h-12 px-3 sm:px-6 flex items-center justify-between pointer-events-auto shrink-0 max-w-6xl mx-auto pt-1">
+      <header className="relative z-30 w-full h-9 sm:h-11 px-2.5 sm:px-6 flex items-center justify-between pointer-events-auto shrink-0 max-w-7xl mx-auto pt-0.5">
         {/* Botón Volver al Mapa */}
         <button
           type="button"
@@ -230,227 +209,154 @@ export const StationTwoStoryView: React.FC<StationTwoStoryViewProps> = ({
             pauseAudio();
             onBackToMap();
           }}
-          className="min-h-[38px] min-w-[38px] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 border border-white shadow-sm hover:bg-white text-[#0284C7] flex items-center justify-center transition-all duration-200 active:scale-95 outline-none focus-visible:ring-3 focus-visible:ring-[#38BDF8]"
+          className="min-h-[32px] min-w-[32px] w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 border border-white shadow-sm hover:bg-white text-[#0284C7] flex items-center justify-center transition-all duration-200 active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#38BDF8]"
           title="Volver al mapa"
           aria-label="Volver al mapa interactivo"
         >
-          <ArrowLeft size={19} className="stroke-[2.5]" />
+          <ArrowLeft size={17} className="stroke-[2.5]" />
         </button>
 
-        {/* Chip Central de la Estación 2 */}
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-[#38BDF8] shadow-sm">
-          <BookOpen size={14} className="text-[#0284C7]" />
+        {/* Indicador Único y Dinámico de Escena (Reemplaza los 12 puntos) */}
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-[#38BDF8]/60 shadow-xs">
+          <BookOpen size={13} className="text-[#0284C7]" />
           <span className="text-[11px] sm:text-xs md:text-sm font-black font-fredoka text-[#0284C7]">
-            2 · La Gotita Viajera · Cuento
+            {isFirstScene ? 'Portada' : `Escena ${currentSceneIndex + 1} de 12`}
           </span>
-          <span className="text-[10px] sm:text-xs font-bold text-[#6B4FA8] font-nunito px-1.5 py-0.2 rounded-full bg-[#E0F2FE]">
+          <span className="text-[10px] sm:text-[11px] font-bold text-[#6B4FA8] font-nunito px-1.5 py-0.2 rounded-full bg-[#E0F2FE]">
             {currentSceneIndex + 1}/12
           </span>
         </div>
 
-        {/* Botones de Utilidad (Sonido y Pantalla Completa) */}
-        <div className="flex items-center gap-1.5">
-          {/* Alternar Sonido */}
-          <button
-            type="button"
-            onClick={() => setSoundEnabled((prev) => !prev)}
-            className="min-h-[38px] min-w-[38px] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 border border-white shadow-sm hover:bg-white text-[#0284C7] flex items-center justify-center transition-all duration-200 active:scale-95 outline-none focus-visible:ring-3 focus-visible:ring-[#38BDF8]"
-            title={soundEnabled ? 'Silenciar narración' : 'Activar narración'}
-            aria-label={soundEnabled ? 'Silenciar narración' : 'Activar narración'}
-          >
-            {soundEnabled ? (
-              <Volume2 size={18} className="stroke-[2.2] text-[#0284C7]" />
-            ) : (
-              <VolumeX size={18} className="stroke-[2.2] text-slate-400" />
-            )}
-          </button>
+        {/* Controles de Audio y Pantalla Completa (Sin botón de mute como se solicitó) */}
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          {/* Botón Play / Pausa */}
+          {!currentScene.isCover && (
+            <button
+              type="button"
+              onClick={handleTogglePlayPause}
+              className="min-h-[32px] min-w-[32px] w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 border border-white shadow-sm hover:bg-white text-[#0284C7] flex items-center justify-center transition-all duration-200 active:scale-95 outline-none"
+              title={isPlaying ? 'Pausar narración (P)' : 'Reproducir narración (P)'}
+              aria-label={isPlaying ? 'Pausar narración' : 'Reproducir narración'}
+            >
+              {isPlaying ? <Pause size={14} /> : <Play size={14} className="translate-x-0.5" />}
+            </button>
+          )}
 
-          {/* Pantalla Completa */}
+          {/* Botón Repetir fragmento de audio */}
+          {!currentScene.isCover && (
+            <button
+              type="button"
+              onClick={handleReplayScene}
+              className="min-h-[32px] min-w-[32px] w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 border border-white shadow-sm hover:bg-white text-[#0284C7] flex items-center justify-center transition-all duration-200 active:scale-95 outline-none"
+              title="Volver a escuchar esta lámina (R)"
+              aria-label="Repetir narración"
+            >
+              <RotateCcw size={14} />
+            </button>
+          )}
+
+          {/* Botón Pantalla Completa */}
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="hidden sm:flex min-h-[38px] min-w-[38px] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 border border-white shadow-sm hover:bg-white text-slate-700 items-center justify-center transition-all duration-200 active:scale-95 outline-none"
+            className="min-h-[32px] min-w-[32px] w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 border border-white shadow-sm hover:bg-white text-slate-700 flex items-center justify-center transition-all duration-200 active:scale-95 outline-none"
             title={isFullscreen ? 'Salir de pantalla completa (F)' : 'Pantalla completa / Modo proyector (F)'}
             aria-label="Pantalla completa"
           >
-            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
           </button>
         </div>
       </header>
 
       {/* ======================================================== */}
-      {/* 3. ESCENA PRINCIPAL: LÁMINA DEL CUENTO (16:9 NÍTIDA)     */}
+      {/* 3. ESCENA PRINCIPAL: MÁXIMO ESPACIO PARA LA LÁMINA       */}
+      {/*    Ocupa el 100% del alto restante sin recortar la imagen */}
       {/* ======================================================== */}
-      <main className="relative z-20 w-full flex-1 min-h-0 flex flex-col items-center justify-center px-3 sm:px-6 py-1 overflow-hidden">
-        <div className="relative w-full h-full max-w-4xl flex flex-col items-center justify-center">
-          {/* Contenedor con animación de transición suave entre láminas */}
-          <div className="relative w-full flex-1 min-h-0 flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentScene.id}
-                initial={{ opacity: 0, scale: 0.97, y: 4 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.97, y: -4 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="relative w-full h-full flex items-center justify-center"
-              >
-                <img
-                  src={currentScene.image}
-                  alt={currentScene.title}
-                  className="max-h-[min(65dvh,480px)] w-auto max-w-full object-contain rounded-2xl sm:rounded-3xl shadow-[0_12px_32px_-6px_rgba(2,132,199,0.25)] border-2 sm:border-3 border-white filter drop-shadow-sm transition-all"
-                  loading="eager"
-                  decoding="async"
-                />
-
-                {/* Badge flotante sutil con el título de la escena */}
-                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-[#38BDF8]/40 shadow-sm flex items-center gap-1.5 pointer-events-none">
-                  <span className="text-xs">❄️</span>
-                  <span className="text-[10px] sm:text-xs font-black font-fredoka text-[#0284C7] tracking-tight">
-                    {currentScene.title}
-                  </span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+      <main className="relative z-20 w-full flex-1 min-h-0 flex items-center justify-center px-1 sm:px-3 pb-1 pt-0.5 overflow-hidden">
+        <div className="relative w-full h-full flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentScene.id}
+              initial={{ opacity: 0, scale: 0.985 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.985 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="relative w-full h-full flex items-center justify-center"
+            >
+              <img
+                src={currentScene.image}
+                alt={currentScene.title}
+                className="max-h-[calc(100dvh-50px)] max-w-full w-auto h-auto object-contain rounded-xl sm:rounded-2xl shadow-[0_12px_32px_-6px_rgba(2,132,199,0.22)] border-2 border-white select-none pointer-events-auto"
+                loading="eager"
+                decoding="async"
+              />
+            </motion.div>
+          </AnimatePresence>
 
           {/* ======================================================== */}
-          {/* BARRA DE NARRACIÓN Y CONTROLES DEL SEGMENTO DE AUDIO    */}
+          {/* CONTROLES FLOTANTES LATERALES (No consumen espacio vertical) */}
           {/* ======================================================== */}
-          {!currentScene.isCover && (
-            <div className="w-full max-w-md mx-auto mt-1 sm:mt-1.5 px-3 py-1 sm:py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-[#38BDF8]/30 shadow-xs flex items-center justify-between gap-2.5">
-              {/* Botón Play / Pausa del segmento */}
+
+          {/* Flecha Lateral Izquierda (Anterior) */}
+          {!isFirstScene && (
+            <button
+              type="button"
+              onClick={handlePrev}
+              className="absolute left-1.5 sm:left-3 md:left-6 top-1/2 -translate-y-1/2 z-30 min-h-[42px] min-w-[42px] w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-white/90 hover:bg-white text-[#0284C7] shadow-lg hover:shadow-xl border-2 border-white backdrop-blur-sm flex items-center justify-center active:scale-90 transition-all duration-150 outline-none focus-visible:ring-3 focus-visible:ring-[#38BDF8]"
+              title="Escena anterior (Flecha Izquierda)"
+              aria-label="Ir a la escena anterior"
+            >
+              <ChevronLeft size={26} className="stroke-[2.8] -translate-x-0.5" />
+            </button>
+          )}
+
+          {/* Flecha Lateral Derecha (Siguiente escena) */}
+          {!isLastScene && !isFirstScene && (
+            <button
+              type="button"
+              onClick={handleNext}
+              className={`absolute right-1.5 sm:right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 min-h-[42px] min-w-[42px] w-11 h-11 sm:w-13 sm:h-13 rounded-full shadow-lg hover:shadow-xl border-2 border-white backdrop-blur-sm flex items-center justify-center active:scale-90 transition-all duration-150 outline-none focus-visible:ring-3 focus-visible:ring-[#38BDF8] ${
+                isSceneAudioFinished
+                  ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white animate-pulse'
+                  : 'bg-white/90 hover:bg-white text-[#0284C7]'
+              }`}
+              title="Siguiente escena (Flecha Derecha o Espacio)"
+              aria-label="Avanzar a la siguiente escena"
+            >
+              <ChevronRight size={26} className="stroke-[2.8] translate-x-0.5" />
+            </button>
+          )}
+
+          {/* Botón Flotante para la Portada (Escena 1) */}
+          {isFirstScene && (
+            <div className="absolute bottom-3 sm:bottom-5 z-30 flex items-center justify-center">
               <button
                 type="button"
-                onClick={handleTogglePlayPause}
-                className="w-8 h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center shadow-xs hover:bg-[#0369A1] active:scale-95 transition-all outline-none"
-                title={isPlaying ? 'Pausar narración (P)' : 'Reproducir narración (P)'}
-                aria-label={isPlaying ? 'Pausar narración' : 'Reproducir narración'}
+                onClick={handleNext}
+                className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-full bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369A1] text-white font-fredoka font-black text-sm sm:text-base md:text-lg flex items-center gap-2 shadow-[0_8px_24px_-4px_rgba(2,132,199,0.5)] hover:brightness-105 active:scale-95 transition-all duration-150 border-2 border-white outline-none"
               >
-                {isPlaying ? <Pause size={14} /> : <Play size={14} className="translate-x-0.5" />}
+                <BookOpen size={20} />
+                <span>Iniciar Cuento Ilustrado ▶</span>
               </button>
+            </div>
+          )}
 
-              {/* Barra de progreso de la escena actual */}
-              <div className="flex-1 flex flex-col justify-center">
-                <div className="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden relative">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-[#38BDF8] to-[#0284C7] rounded-full"
-                    style={{ width: `${sceneProgress * 100}%` }}
-                    transition={{ ease: 'linear', duration: 0.1 }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-bold text-[#6B4FA8]/80 font-nunito mt-0.5">
-                  <span>
-                    {isSceneAudioFinished
-                      ? 'Narración pausada'
-                      : isPlaying
-                        ? 'Escuchando...'
-                        : 'Pausa'}
-                  </span>
-                  <span>{currentScene.timeRangeLabel}</span>
-                </div>
-              </div>
-
-              {/* Botón Repetir Narración */}
+          {/* Botón Flotante para la Última Escena (Escena 12: Completar Estación) */}
+          {isLastScene && (
+            <div className="absolute bottom-3 sm:bottom-5 z-30 flex items-center justify-center">
               <button
                 type="button"
-                onClick={handleReplayScene}
-                className="h-7 px-2.5 rounded-full bg-[#E0F2FE] hover:bg-[#BAE6FD] text-[#0284C7] text-[10px] sm:text-xs font-bold font-fredoka flex items-center gap-1 transition-all active:scale-95 outline-none"
-                title="Volver a escuchar esta página (R)"
-                aria-label="Repetir narración de esta lámina"
+                onClick={handleNext}
+                className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white font-fredoka font-black text-sm sm:text-base md:text-lg flex items-center gap-2 shadow-[0_8px_24px_-4px_rgba(16,185,129,0.55)] hover:brightness-105 active:scale-95 transition-all duration-150 border-2 border-white outline-none animate-bounce"
               >
-                <RotateCcw size={12} />
-                <span className="hidden min-[380px]:inline">Repetir</span>
+                <Sparkles size={20} className="text-yellow-300" />
+                <span>¡Completar Estación 2 y Avanzar!</span>
+                <Sparkles size={20} className="text-yellow-300" />
               </button>
             </div>
           )}
         </div>
       </main>
-
-      {/* ======================================================== */}
-      {/* 4. FOOTER: TIMELINE Y BOTONERA DE AVANCE A SU RITMO      */}
-      {/* ======================================================== */}
-      <footer className="relative z-30 w-full max-w-xl mx-auto px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 flex flex-col gap-2 shrink-0">
-        {/* Línea de Puntos Interactivos (1 a 12) */}
-        <div className="flex items-center justify-center gap-1 sm:gap-1.5 py-0.5">
-          {CUENTO_SCENES.map((scene, idx) => {
-            const isCurrent = idx === currentSceneIndex;
-            const isPassed = idx < currentSceneIndex;
-
-            return (
-              <button
-                key={scene.id}
-                type="button"
-                onClick={() => goToScene(idx)}
-                className={`transition-all duration-200 rounded-full flex items-center justify-center outline-none ${
-                  isCurrent
-                    ? 'w-6 sm:w-7 h-5 sm:h-5.5 bg-[#0284C7] text-white text-[10px] font-black shadow-xs ring-2 ring-[#38BDF8]/40'
-                    : isPassed
-                      ? 'w-2.5 sm:w-3 h-2.5 sm:h-3 bg-emerald-400 hover:bg-emerald-500'
-                      : 'w-2 sm:w-2.5 h-2 sm:h-2.5 bg-slate-300 hover:bg-slate-400'
-                }`}
-                title={`Ir a lámina ${idx + 1}: ${scene.title}`}
-                aria-label={`Ir a lámina ${idx + 1}`}
-              >
-                {isCurrent && <span>{idx + 1}</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Fila de Botones: Anterior y Siguiente */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Botón Escena Anterior */}
-          {!isFirstScene && (
-            <button
-              type="button"
-              onClick={handlePrev}
-              className="min-h-[44px] sm:min-h-[48px] px-3.5 sm:px-4 rounded-full border-2 border-[#38BDF8]/50 bg-white/95 text-[#0284C7] font-fredoka font-bold text-xs sm:text-sm flex items-center gap-1 shadow-xs hover:bg-[#F0F9FF] active:scale-95 transition-all outline-none"
-              aria-label="Ir a la escena anterior"
-            >
-              <ArrowLeft size={16} />
-              <span>Anterior</span>
-            </button>
-          )}
-
-          {/* Botón Protagonista Siguiente / Completar */}
-          <button
-            type="button"
-            onClick={handleNext}
-            className={`flex-1 min-h-[44px] sm:min-h-[48px] px-5 py-2.5 rounded-full font-fredoka font-black text-xs sm:text-sm md:text-base flex items-center justify-center gap-2 shadow-md hover:brightness-105 active:scale-95 transition-all outline-none focus-visible:ring-3 ${
-              isLastScene
-                ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-[0_8px_20px_-4px_rgba(16,185,129,0.45)] focus-visible:ring-emerald-400'
-                : isSceneAudioFinished
-                  ? 'bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369A1] text-white shadow-[0_8px_20px_-4px_rgba(2,132,199,0.45)] animate-pulse focus-visible:ring-[#38BDF8]'
-                  : 'bg-gradient-to-r from-[#38BDF8] via-[#0284C7] to-[#0369A1] text-white shadow-[0_8px_20px_-4px_rgba(2,132,199,0.35)] focus-visible:ring-[#38BDF8]'
-            }`}
-            aria-label={
-              isLastScene
-                ? 'Completar Estación 2 y avanzar a la Estación 3'
-                : isFirstScene
-                  ? 'Iniciar cuento ilustrado'
-                  : 'Avanzar a la siguiente lámina'
-            }
-          >
-            {isLastScene ? (
-              <>
-                <Sparkles size={18} className="text-yellow-300" />
-                <span>¡Completar Estación 2 y Avanzar!</span>
-                <Sparkles size={18} className="text-yellow-300" />
-              </>
-            ) : isFirstScene ? (
-              <>
-                <BookOpen size={18} />
-                <span>Iniciar Cuento Ilustrado ▶</span>
-              </>
-            ) : (
-              <>
-                <span>Siguiente escena</span>
-                <ArrowRight size={18} />
-              </>
-            )}
-          </button>
-        </div>
-      </footer>
     </div>
   );
 };

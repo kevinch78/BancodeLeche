@@ -66,16 +66,16 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
           transition={{ duration: 0.25 }}
-          className="relative mb-1 flex flex-col items-center"
+          className="relative mb-1 sm:mb-1.5 lg:mb-2 flex flex-col items-center"
         >
-          <div className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-2xl bg-white/95 backdrop-blur-md border border-[#F6A6C9] shadow-sm flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#E08A00] animate-ping shrink-0" />
-            <span className="text-[9px] sm:text-[11px] font-fredoka font-bold text-[#3B2A5C] whitespace-nowrap tracking-tight">
+          <div className="px-2.5 py-0.5 sm:px-3 sm:py-1 lg:px-4 lg:py-1.5 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#F6A6C9] shadow-md flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#E08A00] animate-ping shrink-0" />
+            <span className="text-[10px] sm:text-xs md:text-sm lg:text-base font-fredoka font-black text-[#3B2A5C] whitespace-nowrap tracking-tight">
               {speechText}
             </span>
           </div>
           {/* Cola de la nube de diálogo */}
-          <div className="w-2 h-1.5 bg-white border-r border-b border-[#F6A6C9] rotate-45 -mt-1 shadow-2xs" />
+          <div className="w-2.5 h-2 bg-white border-r-2 border-b-2 border-[#F6A6C9] rotate-45 -mt-1 shadow-2xs" />
         </motion.div>
       </AnimatePresence>
 
@@ -91,8 +91,8 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
               animate={{
                 opacity: [1, 0.8, 0],
                 scale: [0.4, 1.1, 0.6],
-                x: (i % 2 === 0 ? -1 : 1) * (14 + i * 9),
-                y: 10 + i * 8,
+                x: (i % 2 === 0 ? -1 : 1) * (18 + i * 12),
+                y: 12 + i * 10,
               }}
               transition={{
                 repeat: Infinity,
@@ -100,7 +100,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
                 delay: i * 0.14,
                 ease: 'easeOut',
               }}
-              className="absolute text-[11px] sm:text-xs select-none"
+              className="absolute text-xs sm:text-sm lg:text-base select-none"
             >
               {i % 2 === 0 ? '✨' : '💧'}
             </motion.div>
@@ -110,18 +110,19 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
 
       {/* ======================================================== */}
       {/* CONTENEDOR DEL PERSONAJE CON BRINCO Y FLOTACIÓN          */}
+      {/* Tamaño generoso y visible en computadores y proyectores   */}
       {/* ======================================================== */}
       <motion.div
         animate={
           isTraveling
             ? {
-                y: [0, -16, 0],
+                y: [0, -18, 0],
                 rotate: [0, -6, 6, 0],
                 scale: [1, 1.08, 0.95, 1],
               }
             : {
-                y: [0, -6, 0],
-                rotate: [0, 2, -2, 0],
+                y: [0, -8, 0],
+                rotate: [0, 2.5, -2.5, 0],
               }
         }
         transition={{
@@ -129,13 +130,13 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
           duration: isTraveling ? 0.42 : 2.4,
           ease: 'easeInOut',
         }}
-        className="relative w-11 h-13 sm:w-13 sm:h-16 md:w-15 md:h-18 filter drop-shadow-md flex items-center justify-center"
+        className="relative w-12 h-14 sm:w-16 sm:h-20 md:w-24 md:h-28 lg:w-32 lg:h-36 xl:w-36 xl:h-40 filter drop-shadow-[0_8px_18px_rgba(107,79,168,0.28)] flex items-center justify-center"
       >
         {!imageError ? (
           <img
             src={gotitaImageUrl}
             alt={stationName || 'La Gotita'}
-            className="w-full h-full object-contain mascot-blend"
+            className="w-full h-full object-contain pointer-events-none"
             onError={() => setImageError(true)}
           />
         ) : (
@@ -154,7 +155,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
           duration: isTraveling ? 0.42 : 2.4,
           ease: 'easeInOut',
         }}
-        className="w-10 sm:w-14 h-3 bg-slate-900/30 rounded-full blur-[2px] -mt-1"
+        className="w-12 sm:w-16 md:w-22 lg:w-28 xl:w-32 h-2.5 sm:h-3.5 lg:h-4 bg-slate-900/30 rounded-full blur-[3px] -mt-1 sm:-mt-2"
       />
     </motion.div>
   );
