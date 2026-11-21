@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { ScreenView } from './types/route.types';
 import { CoverScreen } from './components/cover/CoverScreen';
+import { IntroVideoScreen } from './components/intro/IntroVideoScreen';
 import { InteractiveMap } from './components/map/InteractiveMap';
 import { MetaScreen } from './components/meta/MetaScreen';
 import { OrientationGuard } from './components/ui/OrientationGuard';
@@ -18,6 +19,8 @@ export default function App() {
         setCurrentView('meta');
       } else if (hash === '#mapa' || pathname.endsWith('/mapa')) {
         setCurrentView('map');
+      } else if (hash === '#video' || pathname.endsWith('/video')) {
+        setCurrentView('intro-video');
       }
     };
 
@@ -29,6 +32,11 @@ export default function App() {
       window.removeEventListener('popstate', handleUrlChange);
       window.removeEventListener('hashchange', handleUrlChange);
     };
+  }, []);
+
+  const goToIntroVideo = useCallback(() => {
+    window.location.hash = 'video';
+    setCurrentView('intro-video');
   }, []);
 
   const goToMap = useCallback(() => {
@@ -59,7 +67,20 @@ export default function App() {
               transition={{ duration: 0.35 }}
               className="w-full h-full"
             >
-              <CoverScreen onStart={goToMap} />
+              <CoverScreen onStart={goToIntroVideo} />
+            </motion.div>
+          )}
+
+          {currentView === 'intro-video' && (
+            <motion.div
+              key="intro-video-view"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              transition={{ duration: 0.35 }}
+              className="w-full h-full"
+            >
+              <IntroVideoScreen onComplete={goToMap} />
             </motion.div>
           )}
 

@@ -9,6 +9,7 @@ import { GotitaCharacter } from './GotitaCharacter';
 import { StationHotspot } from './StationHotspot';
 import { StationModal } from './StationModal';
 import { StationOneView } from '../stations/StationOneView';
+import { StationTwoStoryView } from '../stations/StationTwoStoryView';
 import { StationThreePuzzleTimerView } from '../stations/StationThreePuzzleTimerView';
 import { StationFourRiddleView } from '../stations/StationFourRiddleView';
 import { ProgressBadge } from '../ui/ProgressBadge';
@@ -377,6 +378,29 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover, o
           )}
         </AnimatePresence>
 
+        {/* Vista interactiva específica para Estación 2: La Gotita Viajera (Cuento Narrado) */}
+        <AnimatePresence>
+          {isModalOpen && selectedStation?.id === 'estacion-2' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-[#F0F9FF]"
+            >
+              <StationTwoStoryView
+                onBackToMap={closeModal}
+                onCompleteAndAdvance={() => {
+                  markStationCompleted('estacion-2');
+                  closeModal();
+                  // Avanza automáticamente hacia la Estación 3 (La Gotita Valiente)
+                  advanceToNextStation();
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Vista interactiva específica para Estación 3: La Gotita Valiente (Rompecabezas + Timer 5 min) */}
         <AnimatePresence>
           {isModalOpen && selectedStation?.id === 'estacion-3' && (
@@ -429,6 +453,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover, o
 
         {/* Modal Educativo para otras estaciones */}
         {selectedStation?.id !== 'estacion-1' &&
+          selectedStation?.id !== 'estacion-2' &&
           selectedStation?.id !== 'estacion-3' &&
           selectedStation?.id !== 'estacion-4' &&
           selectedStation?.id !== 'meta-hudn' && (

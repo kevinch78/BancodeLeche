@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { gotitaImg } from '../../../assets/images';
+import { gotitaCuriosaImg } from '../../../assets/images';
 
 interface RiddleMascotProps {
   isRevealed: boolean;
@@ -23,11 +23,11 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
   const isHappyFailed = loadErrorHappy;
 
   // ============================================================
-  // VARIANTE MÓVIL VERTICAL (64-80px, SIN círculo ni recuadro)
+  // VARIANTE MÓVIL VERTICAL (72-96px, SIN círculo ni recuadro)
   // ============================================================
   if (variant === 'mobile') {
     return (
-      <div className="relative shrink-0 flex items-center justify-center select-none w-16 sm:w-20 h-16 sm:h-20">
+      <div className="relative shrink-0 flex items-center justify-center select-none w-20 sm:w-24 h-20 sm:h-24">
         <motion.div
           animate={
             isRevealed && !shouldReduceMotion
@@ -49,7 +49,7 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
           }
           className="relative w-full h-full flex items-center justify-center"
           style={{
-            filter: 'drop-shadow(0 4px 10px rgba(217, 96, 154, 0.35))',
+            filter: 'drop-shadow(0 4px 12px rgba(217, 96, 154, 0.35))',
           }}
         >
           {isRevealed ? (
@@ -58,18 +58,18 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               <img
                 src={happySrc}
                 alt="Gotita feliz"
-                width={80}
-                height={80}
+                width={96}
+                height={96}
                 onError={() => setLoadErrorHappy(true)}
                 className="w-full h-full object-contain pointer-events-none"
               />
             ) : (
               <img
-                src={gotitaImg}
+                src={gotitaCuriosaImg}
                 alt="La Gotita Generosa"
-                width={80}
-                height={80}
-                className="w-full h-full object-contain mascot-blend pointer-events-none"
+                width={96}
+                height={96}
+                className="w-full h-full object-contain pointer-events-none"
               />
             )
           ) : (
@@ -78,18 +78,18 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               <img
                 src={thinkingSrc}
                 alt="Gotita pensando"
-                width={80}
-                height={80}
+                width={96}
+                height={96}
                 onError={() => setLoadErrorThinking(true)}
                 className="w-full h-full object-contain pointer-events-none"
               />
             ) : (
               <img
-                src={gotitaImg}
+                src={gotitaCuriosaImg}
                 alt="La Gotita Generosa"
-                width={80}
-                height={80}
-                className="w-full h-full object-contain mascot-blend pointer-events-none"
+                width={96}
+                height={96}
+                className="w-full h-full object-contain pointer-events-none"
               />
             )
           )}
@@ -148,11 +148,11 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               />
             ) : (
               <img
-                src={gotitaImg}
+                src={gotitaCuriosaImg}
                 alt="La Gotita Generosa"
                 width={256}
                 height={256}
-                className="w-full h-full object-contain mascot-blend pointer-events-none"
+                className="w-full h-full object-contain pointer-events-none"
               />
             )
           ) : (
@@ -167,11 +167,11 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               />
             ) : (
               <img
-                src={gotitaImg}
+                src={gotitaCuriosaImg}
                 alt="La Gotita Generosa"
                 width={256}
                 height={256}
-                className="w-full h-full object-contain mascot-blend pointer-events-none"
+                className="w-full h-full object-contain pointer-events-none"
               />
             )
           )}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { WaypointCoordinates } from '../../types/route.types';
-import { gotitaImg } from '../../assets/images';
+import { gotitaCuriosaImg } from '../../assets/images';
 
 interface GotitaCharacterProps {
   coordinates: WaypointCoordinates;
@@ -19,7 +19,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
   stationIndex = 0,
 }) => {
   const [imageError, setImageError] = useState(false);
-  const gotitaImageUrl = gotitaImg;
+  const gotitaImageUrl = gotitaCuriosaImg;
 
   // Frases emotivas según la estación o si está viajando
   const speechText = isTraveling

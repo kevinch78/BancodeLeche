@@ -88,25 +88,43 @@ export const MissionSteps: React.FC<MissionStepsProps> = ({
         </div>
 
         {/* 3 Pasos Compactos */}
-        <div className="flex flex-col gap-2 sm:gap-3">
+        <div className={`flex flex-col ${isCompactLandscape ? 'gap-1' : 'gap-2 sm:gap-3'}`}>
           {steps.map((step) => {
             const Icon = step.icon;
             return (
               <div
                 key={step.num}
-                className="flex items-start gap-2.5 sm:gap-3.5 p-1 rounded-xl hover:bg-white/40 transition-colors"
+                className={`flex items-start ${
+                  isCompactLandscape ? 'gap-2 p-0.5' : 'gap-2.5 sm:gap-3.5 p-1'
+                } rounded-xl hover:bg-white/40 transition-colors`}
               >
-                {/* Icono de 32px */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFF3CC] to-[#FFE69A] border border-[#FFC857] flex items-center justify-center shrink-0 shadow-2xs mt-0.5 text-[#E08A00]">
-                  <Icon size={16} className="stroke-[2.5]" />
+                {/* Icono de paso */}
+                <div
+                  className={`${
+                    isCompactLandscape ? 'w-6 h-6' : 'w-8 h-8'
+                  } rounded-full bg-gradient-to-br from-[#FFF3CC] to-[#FFE69A] border border-[#FFC857] flex items-center justify-center shrink-0 shadow-2xs mt-0.5 text-[#E08A00]`}
+                >
+                  <Icon size={isCompactLandscape ? 13 : 16} className="stroke-[2.5]" />
                 </div>
 
-                {/* Título 15-16px + Descripción 14-17px */}
+                {/* Título y Descripción */}
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-[15px] sm:text-base md:text-[17px] font-fredoka font-bold text-[#3B2A5C] leading-snug">
+                  <h4
+                    className={`${
+                      isCompactLandscape
+                        ? 'text-xs leading-tight'
+                        : 'text-[15px] sm:text-base md:text-[17px] leading-snug'
+                    } font-fredoka font-bold text-[#3B2A5C]`}
+                  >
                     {step.num}. {step.title}
                   </h4>
-                  <p className="text-sm sm:text-[15px] md:text-base font-sans text-[#4A3B66] leading-snug mt-0.5">
+                  <p
+                    className={`${
+                      isCompactLandscape
+                        ? 'text-[11px] leading-tight mt-0.2'
+                        : 'text-sm sm:text-[15px] md:text-base leading-snug mt-0.5'
+                    } font-sans text-[#4A3B66]`}
+                  >
                     {step.detail}
                   </p>
                 </div>

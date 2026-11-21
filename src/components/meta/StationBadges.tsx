@@ -119,14 +119,15 @@ export const StationBadges: React.FC<StationBadgesProps> = ({
 
               {/* Nombre corto (nunca truncado con ellipsis) */}
               <div
-                className={`font-black font-fredoka leading-tight whitespace-nowrap tracking-tight ${
+                className={`font-black font-fredoka leading-none tracking-tight flex flex-col sm:flex-row items-center justify-center gap-0 sm:gap-1 ${
                   compact
-                    ? 'text-[10px] sm:text-[11px] lg:text-xs'
-                    : 'text-[11px] sm:text-xs lg:text-sm'
+                    ? 'text-[9.5px] sm:text-[11px] lg:text-xs'
+                    : 'text-[10px] sm:text-xs lg:text-sm'
                 }`}
                 style={{ color: badge.color }}
               >
-                {badge.name}
+                <span>{badge.name.split('. ')[0]}.</span>
+                <span className="truncate max-w-full">{badge.name.split('. ')[1]}</span>
               </div>
 
               {/* Subtítulo mini en pantallas con espacio */}

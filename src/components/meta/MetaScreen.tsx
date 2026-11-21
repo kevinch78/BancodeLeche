@@ -255,7 +255,7 @@ export const MetaScreen: React.FC<MetaScreenProps> = ({ onBackToMap, onRestart }
                   <p
                     className={`font-bold font-nunito text-[#3B2A5C] leading-snug ${
                       isLowHeight
-                        ? 'text-[11px] sm:text-xs line-clamp-1'
+                        ? 'text-[11px] sm:text-xs leading-tight'
                         : 'text-xs sm:text-sm lg:text-base'
                     }`}
                   >
