@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Volume2, VolumeX, ArrowRight, Sparkles } from 'lucide-react';
-import { inicioVideo } from '../../assets/images';
+import { videoInicioPrincipal } from '../../assets/images';
 
 interface IntroVideoScreenProps {
   onComplete: () => void;
@@ -87,7 +87,7 @@ export const IntroVideoScreen: React.FC<IntroVideoScreenProps> = ({ onComplete }
       {/* ======================================================== */}
       <video
         ref={videoRef}
-        src={inicioVideo}
+        src={videoInicioPrincipal}
         playsInline
         preload="auto"
         onEnded={handleVideoEnded}

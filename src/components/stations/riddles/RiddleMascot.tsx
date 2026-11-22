@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { gotitaCuriosaImg } from '../../../assets/images';
+import { gotaGenerosaImg } from '../../../assets/images';
 
 interface RiddleMascotProps {
   isRevealed: boolean;
@@ -65,7 +65,7 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               />
             ) : (
               <img
-                src={gotitaCuriosaImg}
+                src={gotaGenerosaImg}
                 alt="La Gotita Generosa"
                 width={96}
                 height={96}
@@ -85,7 +85,7 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               />
             ) : (
               <img
-                src={gotitaCuriosaImg}
+                src={gotaGenerosaImg}
                 alt="La Gotita Generosa"
                 width={96}
                 height={96}
@@ -148,7 +148,7 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               />
             ) : (
               <img
-                src={gotitaCuriosaImg}
+                src={gotaGenerosaImg}
                 alt="La Gotita Generosa"
                 width={256}
                 height={256}
@@ -167,7 +167,7 @@ export const RiddleMascot: React.FC<RiddleMascotProps> = ({
               />
             ) : (
               <img
-                src={gotitaCuriosaImg}
+                src={gotaGenerosaImg}
                 alt="La Gotita Generosa"
                 width={256}
                 height={256}

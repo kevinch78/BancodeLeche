@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { gotitaImg } from '../../../assets/images';
+import { gotaValienteImg } from '../../../assets/images';
 
 /**
  * NOTA TÉCNICA DE ASSET:
@@ -84,7 +84,7 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
           }}
         >
           <img
-            src={gotitaImg}
+            src={gotaValienteImg}
             alt="La Gotita Valiente"
             className="w-full h-full object-cover mascot-blend pointer-events-none"
           />

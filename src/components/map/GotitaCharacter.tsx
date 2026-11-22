@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { WaypointCoordinates } from '../../types/route.types';
-import { gotitaCuriosaImg } from '../../assets/images';
+import {
+  gotaPrincipalImg,
+  gotaCuriosaImg,
+  gotaViajeraImg,
+  gotaValienteImg,
+  gotaGenerosaImg,
+} from '../../assets/images';
 
 interface GotitaCharacterProps {
   coordinates: WaypointCoordinates;
@@ -19,7 +25,28 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
   stationIndex = 0,
 }) => {
   const [imageError, setImageError] = useState(false);
-  const gotitaImageUrl = gotitaCuriosaImg;
+
+  // Gotita temática dinámica según la estación de la ruta
+  const getGotitaImage = (index: number): string => {
+    switch (index) {
+      case 0:
+        return gotaPrincipalImg;
+      case 1:
+        return gotaCuriosaImg;
+      case 2:
+        return gotaViajeraImg;
+      case 3:
+        return gotaValienteImg;
+      case 4:
+        return gotaGenerosaImg;
+      case 5:
+        return gotaGenerosaImg;
+      default:
+        return gotaGenerosaImg;
+    }
+  };
+
+  const gotitaImageUrl = getGotitaImage(stationIndex);
 
   // Frases emotivas según la estación o si está viajando
   const speechText = isTraveling
@@ -132,16 +159,23 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
         }}
         className="relative w-12 h-14 sm:w-16 sm:h-20 md:w-24 md:h-28 lg:w-32 lg:h-36 xl:w-36 xl:h-40 filter drop-shadow-[0_8px_18px_rgba(107,79,168,0.28)] flex items-center justify-center"
       >
-        {!imageError ? (
-          <img
-            src={gotitaImageUrl}
-            alt={stationName || 'La Gotita'}
-            className="w-full h-full object-contain pointer-events-none"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <GotitaVectorGraphic isTraveling={isTraveling} />
-        )}
+        <AnimatePresence mode="wait">
+          {!imageError ? (
+            <motion.img
+              key={gotitaImageUrl}
+              src={gotitaImageUrl}
+              alt={stationName || 'La Gotita'}
+              initial={{ scale: 0.8, opacity: 0.5 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-full h-full object-contain pointer-events-none"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <GotitaVectorGraphic isTraveling={isTraveling} />
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* Sombra proyectada en el piso */}
