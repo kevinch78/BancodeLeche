@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { WaypointCoordinates } from '../../types/route.types';
 import {
@@ -17,6 +17,44 @@ interface GotitaCharacterProps {
   stationIndex?: number;
 }
 
+/**
+ * Waypoints clave que siguen la curva natural del sendero morado
+ * entre cada una de las estaciones del mapa (0 = Inicio, 1 = Estación 1, etc.)
+ */
+const PATH_SEGMENTS: Record<string, { x: number; y: number }[]> = {
+  '0-1': [
+    { x: 16.5, y: 41.5 },
+    { x: 21.5, y: 37.0 },
+    { x: 27.5, y: 33.5 },
+  ],
+  '1-2': [
+    { x: 27.5, y: 33.5 },
+    { x: 36.5, y: 31.0 },
+    { x: 45.5, y: 29.5 },
+    { x: 54.5, y: 31.5 },
+  ],
+  '2-3': [
+    { x: 54.5, y: 31.5 },
+    { x: 64.0, y: 33.0 },
+    { x: 73.0, y: 37.5 },
+    { x: 76.5, y: 47.0 },
+    { x: 72.5, y: 59.0 },
+  ],
+  '3-4': [
+    { x: 72.5, y: 59.0 },
+    { x: 70.0, y: 68.0 },
+    { x: 66.0, y: 74.5 },
+    { x: 61.5, y: 77.5 },
+  ],
+  '4-5': [
+    { x: 61.5, y: 77.5 },
+    { x: 52.0, y: 80.0 },
+    { x: 39.0, y: 81.0 },
+    { x: 27.0, y: 79.5 },
+    { x: 16.5, y: 76.5 },
+  ],
+};
+
 export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
   coordinates,
   isTraveling,
@@ -25,6 +63,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
   stationIndex = 0,
 }) => {
   const [imageError, setImageError] = useState(false);
+  const lastArrivedIndexRef = useRef<number>(stationIndex);
 
   // Gotita temática dinámica según la estación de la ruta
   const getGotitaImage = (index: number): string => {
@@ -63,21 +102,57 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
               ? '¡Donar es amor puro! 💖'
               : '¡Llegamos al hospital! 🏁🏥';
 
+  // Trazar el camino a través de los waypoints del sendero morado
+  const getWaypoints = (fromIdx: number, toIdx: number): { x: number; y: number }[] => {
+    if (fromIdx === toIdx) {
+      return [{ x: coordinates.x, y: coordinates.y }];
+    }
+    const forward = fromIdx < toIdx;
+    const start = Math.min(fromIdx, toIdx);
+    const end = Math.max(fromIdx, toIdx);
+    const points: { x: number; y: number }[] = [];
+
+    for (let i = start; i < end; i++) {
+      const segKey = `${i}-${i + 1}`;
+      const seg = PATH_SEGMENTS[segKey];
+      if (seg) {
+        seg.forEach((pt, idx) => {
+          if (points.length === 0 || idx > 0) {
+            points.push(pt);
+          }
+        });
+      }
+    }
+
+    if (!forward) {
+      points.reverse();
+    }
+
+    return points.length > 0 ? points : [{ x: coordinates.x, y: coordinates.y }];
+  };
+
+  const waypoints = isTraveling
+    ? getWaypoints(lastArrivedIndexRef.current, stationIndex)
+    : [{ x: coordinates.x, y: coordinates.y }];
+
+  const xKeyframes = waypoints.map((p) => `${p.x}%`);
+  const yKeyframes = waypoints.map((p) => `${p.y}%`);
+  const travelDuration = isTraveling ? Math.max(1.3, (waypoints.length - 1) * 0.38) : 0.2;
+
   return (
     <motion.div
       className="absolute z-30 pointer-events-none -translate-x-1/2 -translate-y-[85%] flex flex-col items-center select-none"
       initial={false}
       animate={{
-        left: `${coordinates.x}%`,
-        top: `${coordinates.y}%`,
+        left: xKeyframes,
+        top: yKeyframes,
       }}
       transition={{
-        type: 'spring',
-        stiffness: 55,
-        damping: 14,
-        mass: 0.9,
+        duration: travelDuration,
+        ease: 'easeInOut',
       }}
       onAnimationComplete={() => {
+        lastArrivedIndexRef.current = stationIndex;
         if (isTraveling && onArrive) {
           onArrive();
         }
@@ -89,20 +164,20 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
       <AnimatePresence mode="wait">
         <motion.div
           key={speechText}
-          initial={{ opacity: 0, y: 4, scale: 0.85 }}
+          initial={{ opacity: 0, y: 3, scale: 0.85 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
-          transition={{ duration: 0.25 }}
-          className="relative mb-1 sm:mb-1.5 lg:mb-2 flex flex-col items-center"
+          transition={{ duration: 0.22 }}
+          className="relative mb-0.5 sm:mb-1 lg:mb-1.5 flex flex-col items-center"
         >
-          <div className="px-2.5 py-0.5 sm:px-3 sm:py-1 lg:px-4 lg:py-1.5 rounded-2xl bg-white/95 backdrop-blur-md border-2 border-[#F6A6C9] shadow-md flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#E08A00] animate-ping shrink-0" />
-            <span className="text-[10px] sm:text-xs md:text-sm lg:text-base font-fredoka font-black text-[#3B2A5C] whitespace-nowrap tracking-tight">
+          <div className="px-2 py-0.5 sm:px-2.5 sm:py-0.5 lg:px-3 lg:py-1 rounded-xl bg-white/95 backdrop-blur-md border-[1.5px] border-[#F6A6C9] shadow-md flex items-center gap-1.5 max-w-[200px] sm:max-w-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E08A00] animate-ping shrink-0" />
+            <span className="text-[9px] sm:text-xs lg:text-sm font-fredoka font-black text-[#3B2A5C] whitespace-nowrap tracking-tight">
               {speechText}
             </span>
           </div>
           {/* Cola de la nube de diálogo */}
-          <div className="w-2.5 h-2 bg-white border-r-2 border-b-2 border-[#F6A6C9] rotate-45 -mt-1 shadow-2xs" />
+          <div className="w-2 h-1.5 bg-white border-r-[1.5px] border-b-[1.5px] border-[#F6A6C9] rotate-45 -mt-0.5 shadow-2xs" />
         </motion.div>
       </AnimatePresence>
 
@@ -118,16 +193,16 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
               animate={{
                 opacity: [1, 0.8, 0],
                 scale: [0.4, 1.1, 0.6],
-                x: (i % 2 === 0 ? -1 : 1) * (18 + i * 12),
-                y: 12 + i * 10,
+                x: (i % 2 === 0 ? -1 : 1) * (14 + i * 10),
+                y: 10 + i * 8,
               }}
               transition={{
                 repeat: Infinity,
-                duration: 0.6,
-                delay: i * 0.14,
+                duration: 0.55,
+                delay: i * 0.12,
                 ease: 'easeOut',
               }}
-              className="absolute text-xs sm:text-sm lg:text-base select-none"
+              className="absolute text-[10px] sm:text-xs lg:text-sm select-none"
             >
               {i % 2 === 0 ? '✨' : '💧'}
             </motion.div>
@@ -137,27 +212,31 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
 
       {/* ======================================================== */}
       {/* CONTENEDOR DEL PERSONAJE CON BRINCO Y FLOTACIÓN          */}
-      {/* Tamaño generoso y visible en computadores y proyectores   */}
+      {/* Escalado proporcional con container queries (cqh)       */}
       {/* ======================================================== */}
       <motion.div
         animate={
           isTraveling
             ? {
-                y: [0, -18, 0],
-                rotate: [0, -6, 6, 0],
-                scale: [1, 1.08, 0.95, 1],
+                y: [0, -12, 0, -12, 0],
+                rotate: [0, -5, 5, -5, 0],
+                scale: [1, 1.06, 0.96, 1.06, 1],
               }
             : {
-                y: [0, -8, 0],
-                rotate: [0, 2.5, -2.5, 0],
+                y: [0, -6, 0],
+                rotate: [0, 2, -2, 0],
               }
         }
         transition={{
           repeat: Infinity,
-          duration: isTraveling ? 0.42 : 2.4,
+          duration: isTraveling ? 0.38 : 2.4,
           ease: 'easeInOut',
         }}
-        className="relative w-12 h-14 sm:w-16 sm:h-20 md:w-24 md:h-28 lg:w-32 lg:h-36 xl:w-36 xl:h-40 filter drop-shadow-[0_8px_18px_rgba(107,79,168,0.28)] flex items-center justify-center"
+        style={{
+          width: 'clamp(46px, 13.5cqh, 142px)',
+          height: 'clamp(52px, 15.5cqh, 160px)',
+        }}
+        className="relative filter drop-shadow-[0_8px_18px_rgba(107,79,168,0.28)] flex items-center justify-center"
       >
         <AnimatePresence mode="wait">
           {!imageError ? (
@@ -165,10 +244,10 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
               key={gotitaImageUrl}
               src={gotitaImageUrl}
               alt={stationName || 'La Gotita'}
-              initial={{ scale: 0.8, opacity: 0.5 }}
+              initial={{ scale: 0.85, opacity: 0.6 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
               className="w-full h-full object-contain pointer-events-none"
               onError={() => setImageError(true)}
             />
@@ -178,7 +257,7 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
         </AnimatePresence>
       </motion.div>
 
-      {/* Sombra proyectada en el piso */}
+      {/* Sombra proyectada en el piso proporcional */}
       <motion.div
         animate={{
           scale: isTraveling ? [1, 0.5, 1] : [1, 0.85, 1],
@@ -186,10 +265,14 @@ export const GotitaCharacter: React.FC<GotitaCharacterProps> = ({
         }}
         transition={{
           repeat: Infinity,
-          duration: isTraveling ? 0.42 : 2.4,
+          duration: isTraveling ? 0.38 : 2.4,
           ease: 'easeInOut',
         }}
-        className="w-12 sm:w-16 md:w-22 lg:w-28 xl:w-32 h-2.5 sm:h-3.5 lg:h-4 bg-slate-900/30 rounded-full blur-[3px] -mt-1 sm:-mt-2"
+        style={{
+          width: 'clamp(40px, 12cqh, 128px)',
+          height: 'clamp(8px, 1.8cqh, 16px)',
+        }}
+        className="bg-slate-900/30 rounded-full blur-[2px] sm:blur-[3px] -mt-1 sm:-mt-2"
       />
     </motion.div>
   );

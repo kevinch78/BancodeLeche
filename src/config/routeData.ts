@@ -15,19 +15,11 @@ export const ROUTE_STATIONS: StationData[] = [
     shortDescription:
       'Aquí despierta nuestra pequeña gotita de leche materna, lista para una misión de vida y amor.',
     educationalContent:
-      '¡Hola, amiguito explorador! Soy la Gotita de Leche. Nací del amor incondicional de una mamá donante en el departamento de Nariño. Mi destino es muy especial: ayudar a crecer fuertes y sanos a los recién nacidos en el Hospital Universitario Departamental de Nariño. ¿Me acompañas en este maravilloso viaje?',
+      '¡Hola, amiguito explorador! Soy la Gotita de Leche. Nací del amor incondicional de una mamá donante en el departamento de Nariño. Mi destino es muy especial: ayudar a los bebés recién nacidos que más me necesitan. ¿Me acompañas en este maravilloso viaje?',
     type: 'start',
     coordinates: { x: 16.5, y: 41.5 },
     themeColor: 'sky',
     iconName: 'Sparkles',
-    riddle: {
-      riddleText:
-        'Blanca como la nieve, tibia como el calor del hogar, soy el mejor alimento que a un bebé le puedes dar. ¿Quién soy?',
-      hint: 'Soy natural y vengo del pecho materno.',
-      answerText: '¡La leche materna!',
-      funFact:
-        'La leche materna contiene anticuerpos y nutrientes que se adaptan exactamente a las necesidades de cada bebé.',
-    },
     badgeReward: {
       title: 'Espíritu Explorador',
       description: '¡Has iniciado la gran aventura de la lactancia materna!',
@@ -48,41 +40,6 @@ export const ROUTE_STATIONS: StationData[] = [
     coordinates: { x: 27.5, y: 33.5 },
     themeColor: 'mint',
     iconName: 'ShieldCheck',
-    quiz: {
-      id: 'quiz-estacion-1',
-      question: '¿Por qué se le llama al calostro "la primera vacuna del bebé"?',
-      options: [
-        {
-          id: 'opt-1',
-          text: 'Porque se compra en una farmacia en frasquitos de vidrio.',
-          isCorrect: false,
-          feedback: '¡Casi! Pero no se compra; viene naturalmente del pecho de mamá.',
-        },
-        {
-          id: 'opt-2',
-          text: 'Porque contiene anticuerpos que protegen al recién nacido de infecciones.',
-          isCorrect: true,
-          feedback:
-            '¡Excelente respuesta! El calostro es un escudo protector natural lleno de defensas.',
-        },
-        {
-          id: 'opt-3',
-          text: 'Porque cambia de color cuando hace frío.',
-          isCorrect: false,
-          feedback:
-            'La leche es mágica, ¡pero su superpoder principal son los nutrientes y defensas!',
-        },
-      ],
-      explanation:
-        'El calostro es rico en inmunoglobulinas, especialmente IgA secretora, que recubre el tracto digestivo del neonato impidiendo el paso de bacterias.',
-    },
-    riddle: {
-      riddleText: 'Oro no es, plata no es, es doradita y muy nutritiva al nacer. ¿Qué es?',
-      hint: 'Es la primera leche de mamá.',
-      answerText: '¡El calostro!',
-      funFact:
-        'Unas pocas gotas de calostro son suficientes para saciar el pequeño estómago de un recién nacido.',
-    },
     dialogQuestions: [
       {
         id: 1,
@@ -150,33 +107,6 @@ export const ROUTE_STATIONS: StationData[] = [
     coordinates: { x: 54.5, y: 31.5 },
     themeColor: 'sky',
     iconName: 'ThermometerSnowflake',
-    quiz: {
-      id: 'quiz-estacion-2',
-      question: '¿Cuál es el mejor recipiente para almacenar leche materna donada?',
-      options: [
-        {
-          id: 'opt-a',
-          text: 'Frasco de vidrio esterilizado con tapa plástica limpia.',
-          isCorrect: true,
-          feedback:
-            '¡Perfecto! El vidrio facilita la higiene y la conservación libre de químicos nocivos.',
-        },
-        {
-          id: 'opt-b',
-          text: 'Una botella metálica o lata reciclada.',
-          isCorrect: false,
-          feedback: 'Los metales pueden oxidarse y alterar la calidad de la leche.',
-        },
-        {
-          id: 'opt-c',
-          text: 'Un vaso abierto sin tapa en la ventana.',
-          isCorrect: false,
-          feedback: '¡No! La leche materna siempre debe estar bien sellada y refrigerada.',
-        },
-      ],
-      explanation:
-        'El vidrio templado o boro-silicato con tapa plástica libre de BPA previene la adherencia de grasa en las paredes y garantiza una asepsia total.',
-    },
     badgeReward: {
       title: 'Guardián del Frío',
       description: 'Aprendiste a preservar la leche con higiene y amor.',
@@ -199,40 +129,13 @@ export const ROUTE_STATIONS: StationData[] = [
     iconName: 'Puzzle',
     puzzleActivity: {
       instruction:
-        'En esta estación, los participantes deberán organizarse en grupos y armar uno de los tres rompecabezas disponibles en un tiempo de 5 minutos. Cada uno contiene información importante sobre el Banco de Leche Humana.',
+        '1. Crear equipo: Crear 3 equipos de igual cantidad de jugadores.\n2. Armar el rompecabezas: Trabajar en equipo para acabar el rompecabezas antes de los 5 minutos.\n3. Explicar el contenido: Indicar el tema del rompecabezas que le corresponde a cada equipo.',
       defaultDurationSeconds: 300,
       puzzles: [
         { id: 1, title: 'Rompecabezas 1', subtitle: 'Equipo 1' },
         { id: 2, title: 'Rompecabezas 2', subtitle: 'Equipo 2' },
         { id: 3, title: 'Rompecabezas 3', subtitle: 'Equipo 3' },
       ],
-    },
-    quiz: {
-      id: 'quiz-estacion-3',
-      question: '¿Para qué sirve el proceso de pasteurización en el Banco de Leche?',
-      options: [
-        {
-          id: 'opt-p1',
-          text: 'Para cambiar el sabor a chocolate y fresa.',
-          isCorrect: false,
-          feedback:
-            '¡Jeje, qué divertido! Pero la leche materna conserva su sabor original y propiedades.',
-        },
-        {
-          id: 'opt-p2',
-          text: 'Para asegurar que sea totalmente inocua y libre de bacterias para bebés en cuidados intensivos.',
-          isCorrect: true,
-          feedback: '¡Brillante! La pasteurización la hace segura para los bebés más vulnerables.',
-        },
-        {
-          id: 'opt-p3',
-          text: 'Para congelarla y convertirla en helado de paleta.',
-          isCorrect: false,
-          feedback: 'El objetivo es médico: proteger a los recién nacidos.',
-        },
-      ],
-      explanation:
-        'El Banco de Leche del HUDN aplica rigurosos controles fisicoquímicos y microbiológicos para nutrir a bebés prematuros con total seguridad.',
     },
     badgeReward: {
       title: 'Científico de la Salud',
@@ -254,34 +157,6 @@ export const ROUTE_STATIONS: StationData[] = [
     coordinates: { x: 61.5, y: 77.5 },
     themeColor: 'pink',
     iconName: 'HeartHandshake',
-    riddle: {
-      riddleText: 'No lleva capa ni antifaz, pero salva vidas con ternura y bondad. ¿Quién es?',
-      hint: 'Es una mamá que comparte su leche con otros bebitos.',
-      answerText: '¡La mamá donante de leche materna!',
-      funFact:
-        'Un litro de leche materna donada puede alimentar y nutrir a varios recién nacidos prematuros en la UCI neonatal.',
-    },
-    quiz: {
-      id: 'quiz-estacion-4',
-      question: '¿Quiénes se benefician principalmente de la leche humana donada?',
-      options: [
-        {
-          id: 'opt-g1',
-          text: 'Bebés recién nacidos hospitalizados o prematuros que la necesitan para sobrevivir.',
-          isCorrect: true,
-          feedback:
-            '¡Exacto! Es vital para prevenir enfermedades graves como la enterocolitis necrotizante.',
-        },
-        {
-          id: 'opt-g2',
-          text: 'Mascotas del parque central.',
-          isCorrect: false,
-          feedback: 'La leche humana es un tratamiento médico exclusivo para la infancia humana.',
-        },
-      ],
-      explanation:
-        'La leche donada pasteurizada es la mejor alternativa cuando la leche de la propia madre no está disponible inmediatamente.',
-    },
     badgeReward: {
       title: 'Corazón Solidario',
       description: 'Reconociste el heroísmo de las madres donantes de Nariño.',

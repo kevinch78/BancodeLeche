@@ -15,32 +15,32 @@ export const MissionSteps: React.FC<MissionStepsProps> = ({
 
   const defaultFullText =
     fullInstruction ||
-    'En esta estación, los participantes deberán organizarse en grupos y armar uno de los tres rompecabezas disponibles en un tiempo de 5 minutos. Cada uno contiene información importante sobre el protocolo de extracción, pasteurización y cuidado de la leche materna en el Banco de Leche Humana del Hospital Universitario Departamental de Nariño.';
+    '1. Crear equipo: Crear 3 equipos de igual cantidad de jugadores.\n2. Armar el rompecabezas: Trabajar en equipo para acabar el rompecabezas antes de los 5 minutos.\n3. Explicar el contenido: Indicar el tema del rompecabezas que le corresponde a cada equipo.';
 
   const steps = [
     {
       num: 1,
       icon: Users,
-      title: 'Organícense en equipos',
+      title: 'Crear equipo',
       detail: (
         <>
-          Reúnanse en grupo y elijan uno de los{' '}
+          Crear{' '}
           <strong className="text-[#3B2A5C] bg-[#FFE69A]/80 px-1 py-0.2 rounded font-bold">
-            3 rompecabezas
-          </strong>
-          .
+            3 equipos
+          </strong>{' '}
+          de igual cantidad de jugadores.
         </>
       ),
     },
     {
       num: 2,
       icon: Clock,
-      title: 'Armen en 5 minutos',
+      title: 'Armar el rompecabezas',
       detail: (
         <>
-          Trabajen juntos y completen las piezas antes de que el{' '}
+          Trabajar en equipo para acabar el rompecabezas antes de los{' '}
           <strong className="text-[#3B2A5C] bg-[#FFE69A]/80 px-1 py-0.2 rounded font-bold">
-            reloj termine
+            5 minutos
           </strong>
           .
         </>
@@ -49,14 +49,14 @@ export const MissionSteps: React.FC<MissionStepsProps> = ({
     {
       num: 3,
       icon: BookOpen,
-      title: 'Descubran el mensaje',
+      title: 'Explicar el contenido',
       detail: (
         <>
-          Lean juntos la información clave sobre el{' '}
+          Indicar el tema del{' '}
           <strong className="text-[#3B2A5C] bg-[#FFE69A]/80 px-1 py-0.2 rounded font-bold">
-            Banco de Leche
-          </strong>
-          .
+            rompecabezas
+          </strong>{' '}
+          que le corresponde a cada equipo.
         </>
       ),
     },

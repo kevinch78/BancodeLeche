@@ -169,10 +169,11 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ onBackToCover, o
       <div
         ref={mapContainerRef}
         onClick={handleMapClick}
-        className={`relative overflow-hidden select-none ${
+        className={`relative overflow-hidden select-none @container ${
           debugMode ? 'cursor-crosshair ring-4 ring-emerald-400' : ''
         }`}
         style={{
+          containerType: 'size',
           width: 'min(100vw, calc(100dvh * (16 / 9)))',
           height: 'min(100dvh, calc(100vw * (9 / 16)))',
           aspectRatio: '16 / 9',

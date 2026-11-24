@@ -251,9 +251,11 @@ export const StationModal: React.FC<StationModalProps> = ({
           >
             {isGoal
               ? '¡Celebrar Misión Cumplida! 🏆'
-              : hasNextStation
-                ? '¡Siguiente Estación!'
-                : 'Cerrar Estación'}
+              : station.type === 'start'
+                ? '¡Iniciar la Ruta! 🚀'
+                : hasNextStation
+                  ? '¡Siguiente Estación!'
+                  : 'Cerrar Estación'}
           </ActionButton>
         </div>
       </div>

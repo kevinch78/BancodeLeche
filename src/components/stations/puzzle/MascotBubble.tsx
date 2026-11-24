@@ -2,13 +2,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { gotaValienteImg } from '../../../assets/images';
 
-/**
- * NOTA TÉCNICA DE ASSET:
- * El asset actual de la Gotita tiene un patrón de cuadros (checkerboard falso) incrustado en los píxeles.
- * Cuando el equipo de diseño exporte el archivo definitivo con canal alfa real transparente (PNG-24 o WebP),
- * se podrá quitar el contenedor circular protector 'rounded-full overflow-hidden'.
- * Mientras tanto, este contenedor camafeo con fondo crema (#FFF8F3) enmascara el 100% de los bordes con cuadros.
- */
+
 
 interface MascotBubbleProps {
   isTimeFinished?: boolean;
@@ -68,7 +62,7 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
           <span className="text-sm opacity-80">🌸</span>
         </div>
 
-        {/* Gotita GRANDE contenida en círculo camafeo para neutralizar el falso checkerboard */}
+        {/* Gotita Valiente LIBRE (sin marco circular ni fondo artificial) */}
         <motion.div
           animate={
             shouldReduceMotion
@@ -78,15 +72,12 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
                 }
           }
           transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="relative z-10 w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-full bg-[#FFF8F3] border-4 border-white/95 overflow-hidden flex items-center justify-center"
-          style={{
-            filter: 'drop-shadow(0 12px 24px rgba(224, 138, 0, 0.25))',
-          }}
+          className="relative z-10 w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 flex items-center justify-center filter drop-shadow-[0_12px_24px_rgba(224,138,0,0.22)]"
         >
           <img
             src={gotaValienteImg}
             alt="La Gotita Valiente"
-            className="w-full h-full object-cover mascot-blend pointer-events-none"
+            className="w-full h-full object-contain pointer-events-none select-none"
           />
         </motion.div>
 
